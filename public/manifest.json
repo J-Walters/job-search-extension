@@ -8,6 +8,6 @@
   "action": {
     "default_popup": "index.html"
   },
-  "permissions": ["scripting", "tabs"],
+  "permissions": ["scripting", "tabs", "storage"],
   "host_permissions": ["http://*/*", "https://*/*"]
 }

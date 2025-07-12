@@ -1,15 +1,14 @@
+import { nanoid } from 'nanoid';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
+
+import type { FormFields, SavedSearch } from './types/index';
+
 import './App.css';
 
-type FormFields = {
-  keywords: string;
-  searchRadius: number;
-  time: string;
-  sortBy: string;
-};
-
 function App() {
+  const [searches, setSearches] = useState<SavedSearch[]>([]);
   const {
     register,
     handleSubmit,
@@ -24,10 +23,61 @@ function App() {
     },
   });
 
+  useEffect(() => {
+    chrome.storage.local.get(['searches'], (result) => {
+      const existingSearches = Array.isArray(result.searches)
+        ? (result.searches as SavedSearch[])
+        : [];
+      setSearches(existingSearches);
+    });
+  }, []);
+
+  // chrome.storage.local.get(['searches']);
+  // chrome.storage.local.remove(['searches']);
+  chrome.storage.local.get(console.log);
+
+  const buildLinkedInSearchUrl = ({
+    keywords,
+    searchRadius,
+    time,
+    sortBy,
+  }: FormFields) => {
+    const base = 'https://www.linkedin.com/jobs/search/';
+    const params = new URLSearchParams({
+      keywords: keywords,
+      distance: String(searchRadius),
+      f_TPR: time,
+      sortBy: sortBy,
+      geoId: '90000070',
+    });
+    return `${base}?${params}`;
+  };
+
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(data);
-    reset();
+
+    const url = buildLinkedInSearchUrl(data);
+
+    chrome.storage.local.get(['searches'], (result) => {
+      const existingSearches = Array.isArray(result.searches)
+        ? (result.searches as SavedSearch[])
+        : [];
+
+      const newSearch: SavedSearch = {
+        id: nanoid(),
+        ...data,
+      };
+
+      const updatedSearches = [...existingSearches, newSearch];
+
+      chrome.storage.local.set({ searches: updatedSearches });
+
+      setSearches(updatedSearches);
+
+      chrome.tabs.create({ url });
+
+      reset();
+    });
   };
 
   return (
