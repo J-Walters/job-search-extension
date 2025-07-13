@@ -9,6 +9,7 @@ import './App.css';
 
 function App() {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
+  const [activeTab, setActiveTab] = useState('search');
 
   useEffect(() => {
     chrome.storage.local.get(['searches'], (result) => {
@@ -73,6 +74,24 @@ function App() {
     });
   };
 
+  const tabs = [
+    {
+      id: 'search',
+      label: 'Search',
+      content: <LinkedInSearchForm onSubmit={onSubmit} />,
+    },
+    {
+      id: 'saved',
+      label: 'Saved',
+      content: <SavedSearchList searches={searches} />,
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      content: <p>i am settings</p>,
+    },
+  ];
+
   return (
     <div className='max-w-lg mx-auto p-6 rounded-2xl shadow-lg bg-gray-50 shadow-violet-200/20'>
       <header className='flex flex-col'>
@@ -86,14 +105,23 @@ function App() {
           </button>
         </div>
         <nav className='mt-8 flex justify-between rounded-xl bg-white px-2 py-1.5 shadow-sm border border-gray-100 text-gray-600 text-sm'>
-          <button className='flex-1 px-3'>Search</button>
-          <button className='flex-1 px-3'>Saved</button>
-          <button className='flex-1 px-3'>Settings</button>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 px-3 rounded-lg transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-violet-100 text-violet-700 font-semibold'
+                  : 'hover:bg-gray-100'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </nav>
       </header>
       <main className='mt-6'>
-        <LinkedInSearchForm onSubmit={onSubmit} />
-        <SavedSearchList searches={searches} />
+        {tabs.find((tab) => tab.id === activeTab)?.content}
       </main>
     </div>
   );
