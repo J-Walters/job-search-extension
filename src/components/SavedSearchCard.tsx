@@ -1,4 +1,4 @@
-import { Trash, Pencil } from 'lucide-react';
+import { Trash } from 'lucide-react';
 
 import type { SavedSearch } from '../types';
 import type { TimeFrameKey } from '../types';

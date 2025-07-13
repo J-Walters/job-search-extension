@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import LinkedInSearchForm from './components/LinkedInSearchForm';
 import SavedSearchList from './components/SavedSearchList';
+import Settings from './components/Settings';
 import type { FormFields, SavedSearch } from './types/index';
 
 function App() {
@@ -23,9 +24,7 @@ function App() {
     });
   }, []);
 
-  // chrome.storage.local.get(['searches']);
-  // chrome.storage.local.remove(['searches']);
-  chrome.storage.local.get(console.log);
+  // chrome.storage.local.get(console.log);
 
   const buildLinkedInSearchUrl = ({
     keywords,
@@ -88,15 +87,15 @@ function App() {
     {
       id: 'settings',
       label: 'Settings',
-      content: <p>i am settings</p>,
+      content: <Settings setSearches={setSearches} />,
     },
   ];
 
   return (
-    <div className='max-w-lg mx-auto p-6 rounded-2xl shadow-lg bg-gray-50 shadow-violet-200/20'>
+    <div className='max-h-[640px] w-full flex flex-col mx-auto p-4 rounded-2xl bg-gray-50 shadow-[0_0_20px_rgba(139,92,246,0.5)]'>
       <header className='flex flex-col'>
         <div className='flex items-center justify-between'>
-          <h1 className='text-2xl font-semibold text-gray-700'>Clocked In</h1>
+          <h1 className='text-2xl font-semibold'>Clocked In</h1>
           <button
             type='button'
             className='px-3 py-1 rounded-lg bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100'
@@ -104,7 +103,7 @@ function App() {
             Sign In
           </button>
         </div>
-        <nav className='mt-8 flex justify-between rounded-xl bg-white px-2 py-1.5 shadow-sm border border-gray-100 text-gray-600 text-sm'>
+        <nav className='mt-6 flex justify-between rounded-xl bg-white px-2 py-1.5 shadow-sm border border-gray-100 text-gray-600 text-sm'>
           {tabs.map((tab) => (
             <button
               key={tab.id}

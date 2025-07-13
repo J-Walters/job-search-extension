@@ -30,12 +30,13 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
       <div>
         <label
           htmlFor='keywords'
-          className='block text-sm font-medium text-gray-600 mb-1'
+          className='block text-sm font-medium text-gray-700 mb-1'
         >
           Keywords:
         </label>
         <input
-          className='w-full px-4 py-2.5 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-600 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:ring-offset-0'
+          autoFocus
+          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
           type='text'
           placeholder='e.g., Software Engineer'
           {...register('keywords', {
@@ -49,16 +50,17 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           </span>
         )}
       </div>
+
       <div>
         <label
-          className='block text-sm font-medium text-gray-600 mb-1'
           htmlFor='searchRadius'
+          className='block text-sm font-medium text-gray-700 mb-1'
         >
           Search Radius (miles):
         </label>
         <input
           id='searchRadius'
-          className='w-full px-4 py-2.5 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-600 shadow-inner border border-gray-100 focus:outline-none'
+          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
           type='number'
           placeholder='25'
           {...register('searchRadius', {
@@ -75,14 +77,14 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
       </div>
       <div>
         <label
-          className='block text-sm font-medium text-gray-600 mb-1'
           htmlFor='time'
+          className='block text-sm font-medium text-gray-700 mb-1'
         >
           Filter by Time:
         </label>
         <select
           id='time'
-          className='w-full px-4 py-2.5 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-600 shadow-inner border border-gray-100 focus:outline-none'
+          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
           {...register('time')}
         >
           <option value='r1800'>Past 30 Minutes</option>
@@ -94,16 +96,17 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           Select the time frame to filter jobs.
         </span>
       </div>
+
       <div>
         <label
-          className='block text-sm font-medium text-gray-600 mb-1'
           htmlFor='sortBy'
+          className='block text-sm font-medium text-gray-700 mb-1'
         >
           Sort By:
         </label>
         <select
           id='sortBy'
-          className='w-full px-4 py-2.5 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-600 shadow-inner border border-gray-100 focus:outline-none'
+          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
           {...register('sortBy')}
         >
           <option value='R'>Relevance</option>
@@ -113,10 +116,15 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           Select how you want the job listings to be sorted.
         </span>
       </div>
+
       <button
         type='submit'
         disabled={isSubmitting}
-        className='w-full py-2 rounded-2xl bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100 hover:shadow-md active:shadow-inner transition'
+        className='w-full py-2 rounded-2xl  font-semibold text-white transition 
+            bg-gradient-to-b from-violet-400 to-violet-500 
+            shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 
+            hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
+            active:shadow-inner'
       >
         {isSubmitting ? 'Searching...' : 'Go to LinkedIn'}
       </button>

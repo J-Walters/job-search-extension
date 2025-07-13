@@ -12,8 +12,8 @@
 html, body {
   min-width: 320px;
   max-width: 400px;
-  padding: .75rem;
-  height: auto;
-  min-height: 100%;
-  overflow: hidden; 
+  max-height: 620px;
+  padding: .5rem;
+  margin: 0;
+  overflow: visible;
 }
