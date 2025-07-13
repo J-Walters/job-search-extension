@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 
 import LinkedInSearchForm from './components/LinkedInSearchForm';
+import SavedSearchList from './components/SavedSearchList';
 import type { FormFields, SavedSearch } from './types/index';
 
 import './App.css';
@@ -53,6 +54,8 @@ function App() {
       const newSearch: SavedSearch = {
         id: nanoid(),
         ...data,
+        url,
+        created_at: Date.now(),
       };
 
       const updatedSearches = [...existingSearches, newSearch];
@@ -84,7 +87,8 @@ function App() {
         </nav>
       </header>
       <main className='mt-6'>
-        <LinkedInSearchForm onSubmit={onSubmit} />
+        {/* <LinkedInSearchForm onSubmit={onSubmit} /> */}
+        <SavedSearchList searches={searches} />
       </main>
     </div>
   );
