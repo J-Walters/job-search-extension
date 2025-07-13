@@ -5,8 +5,6 @@ import LinkedInSearchForm from './components/LinkedInSearchForm';
 import SavedSearchList from './components/SavedSearchList';
 import type { FormFields, SavedSearch } from './types/index';
 
-import './App.css';
-
 function App() {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
   const [activeTab, setActiveTab] = useState('search');
@@ -83,7 +81,9 @@ function App() {
     {
       id: 'saved',
       label: 'Saved',
-      content: <SavedSearchList searches={searches} />,
+      content: (
+        <SavedSearchList searches={searches} setSearches={setSearches} />
+      ),
     },
     {
       id: 'settings',

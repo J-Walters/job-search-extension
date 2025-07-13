@@ -1,20 +1,29 @@
 import type { SavedSearch } from '../types';
-import type { TimeFrameKey } from '../types';
-import { decodeTimeFrame } from '../utils/decodeTimeFrame';
 import SavedSearchCard from './SavedSearchCard';
 
 type SavedSearchListProps = {
   searches: SavedSearch[];
+  setSearches: React.Dispatch<React.SetStateAction<SavedSearch[]>>;
 };
 
-function SavedSearchList({ searches }: SavedSearchListProps) {
+function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
+  const handleDelete = (id: string) => {
+    const updatedSearches = searches.filter((search) => search.id !== id);
+    setSearches(updatedSearches);
+    chrome.storage.local.set({ searches: updatedSearches });
+  };
+
   return (
     <>
       {searches.length > 0 ? (
         <>
           <ul className='space-y-4'>
             {searches.map((search) => (
-              <SavedSearchCard search={search} />
+              <SavedSearchCard
+                key={search.id}
+                search={search}
+                onDelete={handleDelete}
+              />
             ))}
           </ul>
           {/* <button
