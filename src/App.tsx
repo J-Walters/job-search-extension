@@ -15,7 +15,12 @@ function App() {
       const existingSearches = Array.isArray(result.searches)
         ? (result.searches as SavedSearch[])
         : [];
-      setSearches(existingSearches);
+
+      const sorted = [...existingSearches].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setSearches(sorted);
     });
   }, []);
 
@@ -55,10 +60,10 @@ function App() {
         id: nanoid(),
         ...data,
         url,
-        created_at: Date.now(),
+        created_at: new Date().toISOString(),
       };
 
-      const updatedSearches = [...existingSearches, newSearch];
+      const updatedSearches = [newSearch, ...existingSearches];
 
       chrome.storage.local.set({ searches: updatedSearches });
 
@@ -87,7 +92,7 @@ function App() {
         </nav>
       </header>
       <main className='mt-6'>
-        {/* <LinkedInSearchForm onSubmit={onSubmit} /> */}
+        <LinkedInSearchForm onSubmit={onSubmit} />
         <SavedSearchList searches={searches} />
       </main>
     </div>
