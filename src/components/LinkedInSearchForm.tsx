@@ -25,6 +25,7 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
     await onSubmit(data);
     reset();
   };
+
   return (
     <form className='space-y-4' onSubmit={handleSubmit(handleLocalSubmit)}>
       <div>

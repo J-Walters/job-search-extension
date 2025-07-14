@@ -35,16 +35,18 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
           >
             Add New Search
           </button> */}
-          <ul className='space-y-4'>
-            {searches.map((search) => (
-              <SavedSearchCard
-                key={search.id}
-                search={search}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-              />
-            ))}
-          </ul>
+          <div className='max-h-[400px] overflow-y-auto pr-1 border border-dashed border-pink-300'>
+            <ul className='space-y-4'>
+              {searches.map((search) => (
+                <SavedSearchCard
+                  key={search.id}
+                  search={search}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </ul>
+          </div>
           {/* <button
             type='button'
             className='w-full mt-4 py-2 rounded-2xl bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100 hover:shadow-md active:shadow-inner transition'

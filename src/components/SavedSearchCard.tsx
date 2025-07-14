@@ -2,9 +2,7 @@ import { Trash, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { SavedSearch } from '../types';
-import type { TimeFrameKey } from '../types';
-import type { EditableFields } from '../types/index';
+import type { SavedSearch, TimeFrameKey, EditableFields } from '../types';
 import { decodeTimeFrame } from '../utils/decodeTimeFrame';
 
 type SavedSearchCardProps = {
@@ -65,7 +63,7 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
             <div>
               <label
                 htmlFor='keywords'
-                className='block font-medium text-gray-700 mb-1'
+                className='block font-medium  text-gray-700 mb-1'
               >
                 Keywords:
               </label>
@@ -90,7 +88,7 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
               <div>
                 <label
                   htmlFor='searchRadius'
-                  className='block font-medium text-gray-700 mb-1'
+                  className='block font-medium text-gray-700 mb-1 '
                 >
                   Radius (mi):
                 </label>
@@ -160,8 +158,10 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
       ) : (
         <>
           <a href={search.url} target='_blank' rel='noopener noreferrer'>
-            <p className='font-semibold text-base'>{search.keywords}</p>
-            <p className='text-gray-500 mt-1'>
+            <p className='font-semibold text-sm leading-snug text-violet-700'>
+              {search.keywords}
+            </p>
+            <p className='text-gray-500 text-xs text-nowrap mt-1 '>
               {`${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
                 search.searchRadius
               } miles`}
@@ -170,20 +170,21 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
           <button
             type='button'
             onClick={() => onDelete(search.id)}
-            className='self-start p-1 hover:bg-red-50 rounded transition'
+            className='self-start p-1 rounded hover:bg-red-50 transition'
           >
             <Trash
-              size={14}
+              size={12}
               className='text-gray-400 hover:text-red-500 transition-colors duration-150'
             />
           </button>
+
+          {/* Edit Button */}
           <button
-            onClick={() => {
-              setIsEditing(!isEditing);
-            }}
-            className='self-start p-1 hover:bg-red-50 rounded transition'
+            type='button'
+            onClick={() => setIsEditing(!isEditing)}
+            className='self-start p-1 rounded  hover:bg-violet-100 transition'
           >
-            <Pencil size={14} />
+            <Pencil size={12} className='text-gray-400 hover:text-violet-700' />
           </button>
         </>
       )}
