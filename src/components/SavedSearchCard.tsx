@@ -4,22 +4,23 @@ import { useForm } from 'react-hook-form';
 
 import type { SavedSearch } from '../types';
 import type { TimeFrameKey } from '../types';
-import type { FormFields } from '../types/index';
+import type { EditableFields } from '../types/index';
 import { decodeTimeFrame } from '../utils/decodeTimeFrame';
 
 type SavedSearchCardProps = {
   search: SavedSearch;
   onDelete: (id: string) => void;
+  onEdit: (edited: SavedSearch) => void;
 };
 
-function SavedSearchCard({ search, onDelete }: SavedSearchCardProps) {
-  console.log('search', search);
+function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<EditableFields>({
     defaultValues: {
       keywords: search.keywords,
       searchRadius: search.searchRadius,
@@ -27,12 +28,40 @@ function SavedSearchCard({ search, onDelete }: SavedSearchCardProps) {
     },
   });
 
+  const handleEditSubmit = (data: EditableFields) => {
+    console.log('data', data);
+    const edited: SavedSearch = {
+      ...search,
+      ...data,
+      created_at: new Date().toISOString(),
+    };
+
+    const parsed = new URL(search.url);
+    const params = parsed.searchParams;
+
+    params.set('f_TPR', edited.time);
+    params.set('distance', String(edited.searchRadius));
+    params.set('keywords', edited.keywords);
+
+    edited.url = parsed.toString();
+
+    onEdit(edited);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    reset();
+  };
+
   return (
     <li className='bg-white rounded-xl shadow-sm px-4 py-3 text-sm text-gray-800 flex justify-between items-start'>
       {isEditing ? (
         <>
-          <form className='space-y-3 text-sm' onSubmit={handleSubmit()}>
-            {/* Keywords */}
+          <form
+            className='space-y-3 text-sm'
+            onSubmit={handleSubmit(handleEditSubmit)}
+          >
             <div>
               <label
                 htmlFor='keywords'
@@ -57,10 +86,7 @@ function SavedSearchCard({ search, onDelete }: SavedSearchCardProps) {
                 </span>
               )}
             </div>
-
-            {/* Radius + Time side by side */}
             <div className='grid grid-cols-2 gap-3'>
-              {/* Search Radius */}
               <div>
                 <label
                   htmlFor='searchRadius'
@@ -85,8 +111,6 @@ function SavedSearchCard({ search, onDelete }: SavedSearchCardProps) {
                   </span>
                 )}
               </div>
-
-              {/* Time Frame */}
               <div>
                 <label
                   htmlFor='time'
@@ -109,6 +133,7 @@ function SavedSearchCard({ search, onDelete }: SavedSearchCardProps) {
             <div className='flex gap-3'>
               <button
                 type='submit'
+                disabled={isSubmitting}
                 className='flex-1 py-1.5 text-sm rounded-xl font-semibold text-white transition 
                     bg-gradient-to-b from-violet-400 to-violet-500 
                     shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 
@@ -119,7 +144,8 @@ function SavedSearchCard({ search, onDelete }: SavedSearchCardProps) {
               </button>
               <button
                 type='button'
-                onClick={() => setIsEditing(false)}
+                disabled={isSubmitting}
+                onClick={handleCancel}
                 className='flex-1 py-1.5 text-sm rounded-xl font-semibold text-white transition 
                     bg-gradient-to-b from-gray-300 to-gray-400 
                     shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 

@@ -12,3 +12,5 @@ export interface SavedSearch extends FormFields {
 }
 
 export type TimeFrameKey = 'r1800' | 'r3600' | 'r7200' | 'r86400';
+
+export type EditableFields = Pick<SavedSearch, 'keywords' | 'searchRadius' | 'time'>;

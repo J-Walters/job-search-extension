@@ -13,6 +13,18 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
     chrome.storage.local.set({ searches: updatedSearches });
   };
 
+  const handleEdit = (edited: SavedSearch) => {
+    const updatedSearches = searches
+      .map((s) => (s.id === edited.id ? edited : s))
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+    setSearches(updatedSearches);
+    chrome.storage.local.set({ searches: updatedSearches });
+  };
+
   return (
     <>
       {searches.length > 0 ? (
@@ -29,6 +41,7 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
                 key={search.id}
                 search={search}
                 onDelete={handleDelete}
+                onEdit={handleEdit}
               />
             ))}
           </ul>
