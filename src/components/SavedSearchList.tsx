@@ -17,6 +17,12 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
     <>
       {searches.length > 0 ? (
         <>
+          {/* <button
+            type='button'
+            className='w-full mb-4 py-2 rounded-2xl bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100 hover:shadow-md active:shadow-inner transition'
+          >
+            Add New Search
+          </button> */}
           <ul className='space-y-4'>
             {searches.map((search) => (
               <SavedSearchCard
