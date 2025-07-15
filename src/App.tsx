@@ -24,8 +24,6 @@ function App() {
     });
   }, []);
 
-  // chrome.storage.local.get(console.log);
-
   const buildLinkedInSearchUrl = ({
     keywords,
     searchRadius,
@@ -87,7 +85,7 @@ function App() {
     {
       id: 'settings',
       label: 'Settings',
-      content: <Settings setSearches={setSearches} />,
+      content: <Settings searches={searches} setSearches={setSearches} />,
     },
   ];
 
