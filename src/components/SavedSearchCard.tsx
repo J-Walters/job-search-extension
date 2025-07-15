@@ -53,18 +53,15 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
   };
 
   return (
-    <li className='bg-white rounded-xl shadow-sm px-4 py-3 text-sm text-gray-800 flex justify-between items-start'>
+    <li className='card'>
       {isEditing ? (
         <>
           <form
-            className='space-y-3 text-sm'
+            className='w-full space-y-2 text-sm'
             onSubmit={handleSubmit(handleEditSubmit)}
           >
             <div>
-              <label
-                htmlFor='keywords'
-                className='block font-medium  text-gray-700 mb-1'
-              >
+              <label htmlFor='keywords' className='sr-only'>
                 Keywords:
               </label>
               <input
@@ -72,31 +69,26 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
                 id='keywords'
                 type='text'
                 placeholder='e.g., Software Engineer'
-                className='w-full py-1 px-3 rounded-xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
+                className='edit-input w-full '
                 {...register('keywords', {
                   required: 'Please enter a keyword.',
                   validate: (v) => v.trim() !== '',
                 })}
               />
               {errors.keywords && (
-                <span className='text-xs text-red-400 block mt-1'>
-                  {errors.keywords.message}
-                </span>
+                <span className='edit-error'>{errors.keywords.message}</span>
               )}
             </div>
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-[auto_1fr] gap-7 items-end'>
               <div>
-                <label
-                  htmlFor='searchRadius'
-                  className='block font-medium text-gray-700 mb-1 '
-                >
-                  Radius (mi):
+                <label htmlFor='searchRadius' className='sr-only'>
+                  Radius (miles):
                 </label>
                 <input
                   id='searchRadius'
                   type='number'
                   placeholder='25'
-                  className='w-full py-1 px-3 rounded-xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
+                  className='edit-input w-[96px]'
                   {...register('searchRadius', {
                     required: 'Search radius is required.',
                     min: { value: 1, message: 'Minimum value is 1 mile.' },
@@ -104,23 +96,16 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
                   })}
                 />
                 {errors.searchRadius && (
-                  <span className='text-xs text-red-400 block mt-1'>
+                  <span className='edit-error'>
                     {errors.searchRadius.message}
                   </span>
                 )}
               </div>
               <div>
-                <label
-                  htmlFor='time'
-                  className='block font-medium text-gray-700 mb-1'
-                >
+                <label htmlFor='time' className='sr-only'>
                   Time Frame:
                 </label>
-                <select
-                  id='time'
-                  className='w-full py-1 px-3 rounded-xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
-                  {...register('time')}
-                >
+                <select id='time' className='edit-input' {...register('time')}>
                   <option value='r1800'>Past 30 Minutes</option>
                   <option value='r3600'>Past Hour</option>
                   <option value='r7200'>Past 2 Hours</option>
@@ -128,63 +113,48 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
                 </select>
               </div>
             </div>
-            <div className='flex gap-3'>
-              <button
-                type='submit'
-                disabled={isSubmitting}
-                className='flex-1 py-1.5 text-sm rounded-xl font-semibold text-white transition 
-                    bg-gradient-to-b from-violet-400 to-violet-500 
-                    shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 
-                    hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
-                    active:shadow-inner'
-              >
-                Save
-              </button>
+            <div className='edit-button-container'>
               <button
                 type='button'
-                disabled={isSubmitting}
-                onClick={handleCancel}
-                className='flex-1 py-1.5 text-sm rounded-xl font-semibold text-white transition 
-                    bg-gradient-to-b from-gray-300 to-gray-400 
-                    shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 
-                    hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
-                    active:shadow-inner'
+                onClick={() => handleCancel()}
+                className='edit-cancel-button'
               >
                 Cancel
               </button>
+              <button className='edit-save-button'>Save</button>
             </div>
           </form>
         </>
       ) : (
         <>
-          <a href={search.url} target='_blank' rel='noopener noreferrer'>
-            <p className='font-semibold text-sm leading-snug text-violet-700'>
-              {search.keywords}
-            </p>
-            <p className='text-gray-500 text-xs text-nowrap mt-1 '>
+          <a
+            href={search.url}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='card-content'
+          >
+            <p className='card-title'>{search.keywords}</p>
+            <p className='card-meta'>
               {`${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
                 search.searchRadius
               } miles`}
             </p>
           </a>
+
           <button
             type='button'
             onClick={() => onDelete(search.id)}
-            className='self-start p-1 rounded hover:bg-red-50 transition'
+            className='card-action card-action-delete'
           >
-            <Trash
-              size={12}
-              className='text-gray-400 hover:text-red-500 transition-colors duration-150'
-            />
+            <Trash size={12} className='icon-delete' />
           </button>
 
-          {/* Edit Button */}
           <button
             type='button'
             onClick={() => setIsEditing(!isEditing)}
-            className='self-start p-1 rounded  hover:bg-violet-100 transition'
+            className='card-action card-action-edit'
           >
-            <Pencil size={12} className='text-gray-400 hover:text-violet-700' />
+            <Pencil size={12} className='icon-edit' />
           </button>
         </>
       )}

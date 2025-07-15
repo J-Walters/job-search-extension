@@ -27,17 +27,17 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
   };
 
   return (
-    <form className='space-y-4' onSubmit={handleSubmit(handleLocalSubmit)}>
+    <form
+      className='search-container'
+      onSubmit={handleSubmit(handleLocalSubmit)}
+    >
       <div>
-        <label
-          htmlFor='keywords'
-          className='block text-sm font-medium text-gray-700 mb-1'
-        >
+        <label htmlFor='keywords' className='search-label'>
           Keywords:
         </label>
         <input
           autoFocus
-          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
+          className='search-input'
           type='text'
           placeholder='e.g., Software Engineer'
           {...register('keywords', {
@@ -46,22 +46,17 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           })}
         />
         {errors.keywords && (
-          <span className='text-xs text-red-400 mt-1 block'>
-            {errors.keywords.message}
-          </span>
+          <span className='errors'>{errors.keywords.message}</span>
         )}
       </div>
 
       <div>
-        <label
-          htmlFor='searchRadius'
-          className='block text-sm font-medium text-gray-700 mb-1'
-        >
+        <label htmlFor='searchRadius' className='search-label'>
           Search Radius (miles):
         </label>
         <input
           id='searchRadius'
-          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
+          className='search-input'
           type='number'
           placeholder='25'
           {...register('searchRadius', {
@@ -71,62 +66,38 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           })}
         />
         {errors.searchRadius && (
-          <span className='text-xs text-red-400 mt-1 block'>
-            {errors.searchRadius.message}
-          </span>
+          <span className='search-error'>{errors.searchRadius.message}</span>
         )}
       </div>
       <div>
-        <label
-          htmlFor='time'
-          className='block text-sm font-medium text-gray-700 mb-1'
-        >
+        <label htmlFor='time' className='search-label'>
           Filter by Time:
         </label>
-        <select
-          id='time'
-          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
-          {...register('time')}
-        >
+        <select id='time' className='search-input' {...register('time')}>
           <option value='r1800'>Past 30 Minutes</option>
           <option value='r3600'>Past Hour</option>
           <option value='r7200'>Past 2 Hours</option>
           <option value='r86400'>Past 24 Hours</option>
         </select>
-        <span className='text-xs text-gray-400 mt-1 block'>
+        <span className='search-subtext'>
           Select the time frame to filter jobs.
         </span>
       </div>
 
       <div>
-        <label
-          htmlFor='sortBy'
-          className='block text-sm font-medium text-gray-700 mb-1'
-        >
+        <label htmlFor='sortBy' className='search-label'>
           Sort By:
         </label>
-        <select
-          id='sortBy'
-          className='w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400'
-          {...register('sortBy')}
-        >
+        <select id='sortBy' className='search-input' {...register('sortBy')}>
           <option value='R'>Relevance</option>
           <option value='DD'>Most Recent</option>
         </select>
-        <span className='text-xs text-gray-400 mt-1 block'>
+        <span className='search-subtext'>
           Select how you want the job listings to be sorted.
         </span>
       </div>
 
-      <button
-        type='submit'
-        disabled={isSubmitting}
-        className='w-full py-2 rounded-2xl  font-semibold text-white transition 
-            bg-gradient-to-b from-violet-400 to-violet-500 
-            shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 
-            hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
-            active:shadow-inner'
-      >
+      <button type='submit' disabled={isSubmitting} className='search-button'>
         {isSubmitting ? 'Searching...' : 'Go to LinkedIn'}
       </button>
     </form>

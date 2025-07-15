@@ -1,19 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import "tailwindcss";
 
-@tailwind utilities;
-
 @layer base {
+  :root {
+    --font-main: 'Poppins', sans-serif;
+  }
+
+  html,
   body {
-    @apply bg-gray-100;
+    @apply min-w-[320px] max-w-[400px] max-h-[620px] p-2 m-0 overflow-visible font-[var(--font-main)];
   }
 }
 
+@layer components {
+  /** ----- SEARCH FORM ----- */
+  
+  .search-container {
+    @apply space-y-4
+  }
 
-html, body {
-  min-width: 320px;
-  max-width: 400px;
-  max-height: 620px;
-  padding: .5rem;
-  margin: 0;
-  overflow: visible;
+  .search-label {
+    @apply block text-sm font-medium text-gray-700 mb-1
+  }
+
+  .search-input {
+    @apply w-full px-4 py-2 rounded-2xl bg-gradient-to-b from-gray-100 to-gray-50 text-gray-700 shadow-inner border border-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-400;
+  }
+
+  .search-subtext {
+    @apply text-xs text-gray-400 mt-1 block
+  }
+
+  .search-button {
+    @apply w-full py-2 rounded-2xl  font-semibold text-white transition 
+            bg-gradient-to-b from-violet-400 to-violet-500 
+            shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] 
+            hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
+            active:shadow-inner
+  }
+
+  .search-error {
+    @apply text-xs text-red-400 mt-1 block
+  }
+
+  /** ----- EDIT FORM ----- */
+  .edit-label {
+    @apply text-xs block font-medium text-gray-700 mb-1
+  }
+
+  .edit-input {
+    @apply h-7 leading-snug text-xs border-b border-gray-300 bg-transparent px-0 py-0.5 focus:outline-none focus:border-violet-500}  
+
+
+  .edit-error {
+    @apply text-xs text-red-400 block mt-1
+  }
+
+  .edit-button-container {
+    @apply flex justify-end w-full items-center gap-1.5 mt-1 text-sm text-gray-500
+  }
+
+  .edit-save-button {
+    @apply text-xs font-semibold px-3 py-1 rounded-lg hover:bg-violet-200 text-violet-600 bg-violet-100
+  }
+
+  .edit-cancel-button {
+    @apply text-xs px-3 py-1 rounded-lg text-gray-500 hover:bg-gray-100
+  }
+
+
+  /* ------- CARD ------ */
+  .card {
+    @apply bg-white rounded-xl shadow-sm px-4 py-3 text-sm text-gray-800 flex justify-between items-start
+  }
+
+    .card-content {
+    @apply flex-1;
+  }
+
+  .card-title {
+    @apply font-semibold text-sm leading-snug text-violet-700;
+  }
+
+  .card-meta {
+    @apply text-gray-500 text-xs text-nowrap mt-1;
+  }
+
+  .card-action {
+    @apply self-start p-1 rounded transition;
+  }
+
+  .card-action-delete {
+    @apply hover:bg-red-50;
+  }
+
+  .card-action-edit {
+    @apply hover:bg-violet-100;
+  }
+
+  .icon-delete {
+    @apply text-gray-400 hover:text-red-500 transition-colors duration-150;
+  }
+
+  .icon-edit {
+    @apply text-gray-400 hover:text-violet-700;
+  }
+
 }
+
+@layer utilities {
+    .button-primary {
+    @apply w-full py-2 rounded-2xl font-semibold text-white transition
+           bg-gradient-to-b from-violet-400 to-violet-500
+           shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)]
+           hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
+           active:shadow-inner;
+  }
+
+  .button-muted {
+    @apply py-1.5 text-sm rounded-xl font-semibold text-white transition 
+           bg-gradient-to-b from-gray-300 to-gray-400 
+           shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)]
+           hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
+           active:shadow-inner;
+  }
+
+  .form-error {
+    @apply text-xs text-red-400 mt-1 block;
+  }
+
+  .icon-action {
+    @apply text-gray-400 transition-colors duration-150;
+  }
+  .icon-delete-hover {
+    @apply hover:text-red-500;
+  }
+  .icon-edit-hover {
+    @apply hover:text-violet-700;
+  }
+
+}
+
+
+
+
+
