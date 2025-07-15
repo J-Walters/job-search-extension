@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import type { SavedSearch } from '../types';
 
@@ -8,12 +8,51 @@ type SettingsProps = {
 };
 
 function Settings({ searches, setSearches }: SettingsProps) {
+  const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
+  const [reminderFrequency, setReminderFrequency] = useState<string>('');
+
+  // chrome.storage.local.remove('reminderSettings');
+
+  useEffect(() => {
+    chrome.storage.local.get('settings', (result) => {
+      const reminder = result.settings.reminderSettings;
+      if (reminder) {
+        setRemindersEnabled(reminder.enabled ?? false);
+        setReminderFrequency(String(reminder.frequency ?? '60'));
+      }
+    });
+  }, []);
+
+  const handleToggle = (newValue: boolean) => {
+    setRemindersEnabled(newValue);
+    chrome.storage.local.set({
+      settings: {
+        reminderSettings: {
+          frequency: reminderFrequency,
+          enabled: newValue,
+        },
+      },
+    });
+  };
+
+  const handleFrequencyChange = (value: string) => {
+    setReminderFrequency(value);
+    chrome.storage.local.set({
+      settings: {
+        reminderSettings: {
+          frequency: value,
+          enabled: reminderFrequency,
+        },
+      },
+    });
+  };
+
   const handleClear = () => {
     chrome.storage.local.set({ searches: [] });
     setSearches([]);
   };
 
-  function convertToCSV(data: SavedSearch[]): string {
+  const convertToCSV = (data: SavedSearch[]): string => {
     console.log('data', data);
     if (!data.length) return '';
 
@@ -31,7 +70,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
     );
 
     return [header, ...rows].join('\n');
-  }
+  };
 
   const handleExport = () => {
     const csvData = convertToCSV(searches);
@@ -48,6 +87,53 @@ function Settings({ searches, setSearches }: SettingsProps) {
 
   return (
     <>
+      <h2>Notifications</h2>
+      <label
+        htmlFor='reminders-toggle'
+        className='text-sm font-medium text-gray-700'
+      >
+        Enable Reminders
+      </label>
+      <br />
+      <input
+        id='reminders-toggle'
+        type='checkbox'
+        checked={remindersEnabled}
+        onChange={(e) => handleToggle(e.target.checked)}
+        className="appearance-none w-10 h-5 bg-gray-300 rounded-full shadow-inner checked:bg-violet-500 transition relative before:content-[''] before:absolute before:left-1 before:top-1 before:w-3 before:h-3 before:bg-white before:rounded-full before:transition-transform checked:before:translate-x-5"
+      />
+      <br />
+      <label htmlFor='notifications'>Reminder Frequency</label>
+      <select
+        id='notifications'
+        name='notifications'
+        disabled={!remindersEnabled}
+        value={reminderFrequency}
+        style={{
+          border: '2px solid #C97C4A',
+          borderRadius: '12px',
+          padding: '0 16px',
+          height: '40px',
+          fontSize: '14px',
+          background: '#efd9b5',
+          color: '#5d3520',
+          transition: 'border-color 0.2s, box-shadow 0.2s',
+        }}
+        onChange={(e) => {
+          handleFrequencyChange(e.target.value);
+        }}
+      >
+        <option value=''>Select a Frequency</option>
+        <option value='1'>Every 1 Minutes</option>
+        <option value='60'>Every Hour</option>
+        {/* <option value='120'>Every 2 Hours</option>
+        <option value='180'>Every 3 Hours</option>
+        <option value='360'>Every 6 Hours</option>
+        <option value='720'>Every 12 Hours</option>
+        <option value='1440'>Daily</option>
+        <option value='2880'>Every 2 Days</option> */}
+      </select>
+
       <h2 className=''>Searches</h2>
       <button
         type='button'
