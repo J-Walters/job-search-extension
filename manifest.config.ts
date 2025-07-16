@@ -7,10 +7,15 @@ export default defineManifest({
   action: {
     default_popup: 'index.html',
   },
+  icons: {
+    16: 'icons/alarm.png',
+    48: 'icons/alarm.png',
+    128: 'icons/alarm.png',
+  },
   background: {
     service_worker: 'src/background/index.ts',
     type: 'module',
   },
-  permissions: ['tabs', 'storage', 'alarms'],
+  permissions: ['tabs', 'storage', 'alarms', 'notifications'],
   host_permissions: ['<all_urls>'],
 });

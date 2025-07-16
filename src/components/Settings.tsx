@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import type { SavedSearch } from '../types';
+import updateReminderSettings from '../utils/updateReminderSetting';
 
 type SettingsProps = {
   searches: SavedSearch[];
@@ -11,11 +12,9 @@ function Settings({ searches, setSearches }: SettingsProps) {
   const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
   const [reminderFrequency, setReminderFrequency] = useState<string>('');
 
-  // chrome.storage.local.remove('reminderSettings');
-
   useEffect(() => {
     chrome.storage.local.get('settings', (result) => {
-      const reminder = result.settings.reminderSettings;
+      const reminder = result.settings?.reminderSettings;
       if (reminder) {
         setRemindersEnabled(reminder.enabled ?? false);
         setReminderFrequency(String(reminder.frequency ?? '60'));
@@ -25,26 +24,12 @@ function Settings({ searches, setSearches }: SettingsProps) {
 
   const handleToggle = (newValue: boolean) => {
     setRemindersEnabled(newValue);
-    chrome.storage.local.set({
-      settings: {
-        reminderSettings: {
-          frequency: reminderFrequency,
-          enabled: newValue,
-        },
-      },
-    });
+    updateReminderSettings({ enabled: newValue, frequency: reminderFrequency });
   };
 
   const handleFrequencyChange = (value: string) => {
     setReminderFrequency(value);
-    chrome.storage.local.set({
-      settings: {
-        reminderSettings: {
-          frequency: value,
-          enabled: reminderFrequency,
-        },
-      },
-    });
+    updateReminderSettings({ frequency: value, enabled: remindersEnabled });
   };
 
   const handleClear = () => {
@@ -109,6 +94,9 @@ function Settings({ searches, setSearches }: SettingsProps) {
         name='notifications'
         disabled={!remindersEnabled}
         value={reminderFrequency}
+        className={`... ${
+          !remindersEnabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
         style={{
           border: '2px solid #C97C4A',
           borderRadius: '12px',
@@ -124,8 +112,8 @@ function Settings({ searches, setSearches }: SettingsProps) {
         }}
       >
         <option value=''>Select a Frequency</option>
-        <option value='1'>Every 1 Minutes</option>
-        <option value='60'>Every Hour</option>
+        <option value='5'>Every 5 Minutes</option>
+        {/* <option value='60'>Every Hour</option> */}
         {/* <option value='120'>Every 2 Hours</option>
         <option value='180'>Every 3 Hours</option>
         <option value='360'>Every 6 Hours</option>
