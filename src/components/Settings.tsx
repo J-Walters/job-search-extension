@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 
 import type { SavedSearch } from '../types';
@@ -8,9 +9,17 @@ type SettingsProps = {
   setSearches: React.Dispatch<React.SetStateAction<SavedSearch[]>>;
 };
 
+interface Tags {
+  id: string;
+  company: string;
+}
+
 function Settings({ searches, setSearches }: SettingsProps) {
   const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
   const [reminderFrequency, setReminderFrequency] = useState<string>('');
+  const [tags, setTags] = useState<Tags[]>([]);
+  const [tagText, setTagText] = useState<string>('');
+  const [tagError, setTagError] = useState(false);
 
   useEffect(() => {
     chrome.storage.local.get('settings', (result) => {
@@ -19,6 +28,13 @@ function Settings({ searches, setSearches }: SettingsProps) {
         setRemindersEnabled(reminder.enabled ?? false);
         setReminderFrequency(String(reminder.frequency ?? '60'));
       }
+    });
+  }, []);
+
+  useEffect(() => {
+    chrome.storage.local.get(['companyTags'], (result) => {
+      const existingTags = result.companyTags ? result.companyTags : [];
+      setTags([...existingTags]);
     });
   }, []);
 
@@ -70,8 +86,58 @@ function Settings({ searches, setSearches }: SettingsProps) {
     URL.revokeObjectURL(url);
   };
 
+  const handleAddTags = () => {
+    if (tagText.trim() === '') {
+      setTagError(true);
+      return;
+    }
+
+    chrome.storage.local.get('companyTags', (result) => {
+      const existingTags = result.companyTags ? result.companyTags : [];
+
+      const newTag: Tags = {
+        id: nanoid(),
+        company: tagText,
+      };
+
+      const updatedTags = [newTag, ...existingTags];
+
+      chrome.storage.local.set({ companyTags: updatedTags });
+      setTags(updatedTags);
+      setTagText('');
+      setTagError(false);
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    const updatedTags = tags.filter((tag) => tag.id !== id);
+    setTags(updatedTags);
+    chrome.storage.local.set({ companyTags: updatedTags });
+  };
+
   return (
     <>
+      <h2>Filters Searches By Company</h2>
+      {tags.length > 0 &&
+        tags.map((tag) => {
+          return (
+            <div key={tag.id}>
+              <span>{tag.company}</span>
+              <button type='button' onClick={() => handleDelete(tag.id)}>
+                x
+              </button>
+            </div>
+          );
+        })}
+      <input
+        value={tagText}
+        onChange={(e) => setTagText(e.target.value)}
+        className='border border-amber-200'
+      />
+      {tagError && <p>Cannot submit an empty string.</p>}
+      <button type='submit' onClick={handleAddTags}>
+        submit
+      </button>
       <h2>Notifications</h2>
       <label
         htmlFor='reminders-toggle'
@@ -121,8 +187,6 @@ function Settings({ searches, setSearches }: SettingsProps) {
         <option value='1440'>Daily</option>
         <option value='2880'>Every 2 Days</option> */}
       </select>
-
-      <h2 className=''>Searches</h2>
       <button
         type='button'
         onClick={handleClear}
