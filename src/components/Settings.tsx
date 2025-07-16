@@ -23,13 +23,13 @@ function Settings({ searches, setSearches }: SettingsProps) {
   }, []);
 
   const handleToggle = (newValue: boolean) => {
-    setRemindersEnabled(newValue);
     updateReminderSettings({ enabled: newValue, frequency: reminderFrequency });
+    setRemindersEnabled(newValue);
   };
 
   const handleFrequencyChange = (value: string) => {
-    setReminderFrequency(value);
     updateReminderSettings({ frequency: value, enabled: remindersEnabled });
+    setReminderFrequency(value);
   };
 
   const handleClear = () => {

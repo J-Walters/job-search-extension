@@ -48,7 +48,7 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.settings) {
-    console.log('⚙️ Settings changed — syncing alarm');
+    console.log('Settings changed — syncing alarm');
     syncAlarm();
   }
 });
@@ -58,7 +58,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_NAME) {
     chrome.notifications.create({
       type: 'basic',
-      iconUrl: 'icons/alarm.png', 
+      iconUrl: chrome.runtime.getURL('icons/alarm.png'), 
       title: 'Time to check for jobs!',
       message: 'Don’t forget to run your Clocked In search.',
       silent: false,
