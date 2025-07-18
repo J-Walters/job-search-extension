@@ -10,3 +10,12 @@ const map: Record<TimeFrameKey, string> = {
 export const decodeTimeFrame = (value: TimeFrameKey): string => {
   return map[value];
 };
+
+const recencyMap: Record<'DD' | 'R', string> = {
+  DD: 'Most Recent',
+  R: 'Most Relevant'
+}
+
+export const decodeSortBy = (value: 'DD' | 'R'):string => {
+  return recencyMap[value];
+}

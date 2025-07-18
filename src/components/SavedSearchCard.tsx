@@ -1,9 +1,10 @@
 import { Trash, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { parse } from 'tldts';
 
 import type { SavedSearch, TimeFrameKey, EditableFields } from '../types';
-import { decodeTimeFrame } from '../utils/decodeTimeFrame';
+import { decodeTimeFrame, decodeSortBy } from '../utils/decodeTimeFrame';
 
 type SavedSearchCardProps = {
   search: SavedSearch;
@@ -26,7 +27,21 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
     },
   });
 
-  const metaData = search.searchRadius && search.time;
+  const metaData = search.searchRadius && search.time && search.sortBy;
+
+  const getBaseDomain = (url: string): string | false => {
+    const parsed = parse(url);
+    console.log(parsed);
+
+    if (parsed.isIp || !parsed.domainWithoutSuffix) return false;
+
+    return (
+      parsed.domainWithoutSuffix.charAt(0).toUpperCase() +
+      parsed.domainWithoutSuffix.slice(1)
+    );
+  };
+
+  const domain = getBaseDomain(search.url);
 
   const handleEditSubmit = (data: EditableFields) => {
     console.log('data', data);
@@ -144,12 +159,21 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
             className='card-content'
           >
             <p className='card-title'>{search.keywords}</p>
-            <p className='card-meta'>
-              {metaData &&
-                `${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
-                  search.searchRadius
-                } miles`}
-            </p>
+            {metaData && (
+              <>
+                <p className='card-meta'>
+                  {`${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
+                    search.searchRadius
+                  } miles`}
+                </p>
+              </>
+            )}
+            {domain && <span className='edit-save-button mr-2'>{domain}</span>}
+            {metaData && (
+              <span className='edit-save-button'>
+                {decodeSortBy(search.sortBy as 'DD' | 'R')}
+              </span>
+            )}
           </a>
           <button
             type='button'
