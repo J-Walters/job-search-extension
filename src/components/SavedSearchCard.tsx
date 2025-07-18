@@ -26,6 +26,8 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
     },
   });
 
+  const metaData = search.searchRadius && search.time;
+
   const handleEditSubmit = (data: EditableFields) => {
     console.log('data', data);
     const edited: SavedSearch = {
@@ -79,49 +81,57 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
                 <span className='edit-error'>{errors.keywords.message}</span>
               )}
             </div>
-            <div className='grid grid-cols-[auto_1fr] gap-7 items-end'>
-              <div>
-                <label htmlFor='searchRadius' className='sr-only'>
-                  Radius (miles):
-                </label>
-                <input
-                  id='searchRadius'
-                  type='number'
-                  placeholder='25'
-                  className='edit-input w-[96px]'
-                  {...register('searchRadius', {
-                    required: 'Search radius is required.',
-                    min: { value: 1, message: 'Minimum value is 1 mile.' },
-                    valueAsNumber: true,
-                  })}
-                />
-                {errors.searchRadius && (
-                  <span className='edit-error'>
-                    {errors.searchRadius.message}
-                  </span>
-                )}
+            {metaData && (
+              <div className='grid grid-cols-[auto_1fr] gap-7 items-end'>
+                <div>
+                  <label htmlFor='searchRadius' className='sr-only'>
+                    Radius (miles):
+                  </label>
+                  <input
+                    id='searchRadius'
+                    type='number'
+                    placeholder='25'
+                    className='edit-input w-[96px]'
+                    {...register('searchRadius', {
+                      required: 'Search radius is required.',
+                      min: { value: 1, message: 'Minimum value is 1 mile.' },
+                      valueAsNumber: true,
+                    })}
+                  />
+                  {errors.searchRadius && (
+                    <span className='edit-error'>
+                      {errors.searchRadius.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor='time' className='sr-only'>
+                    Time Frame:
+                  </label>
+                  <select
+                    id='time'
+                    className='edit-input'
+                    {...register('time')}
+                  >
+                    <option value='r1800'>Past 30 Minutes</option>
+                    <option value='r3600'>Past Hour</option>
+                    <option value='r7200'>Past 2 Hours</option>
+                    <option value='r86400'>Past 24 Hours</option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <label htmlFor='time' className='sr-only'>
-                  Time Frame:
-                </label>
-                <select id='time' className='edit-input' {...register('time')}>
-                  <option value='r1800'>Past 30 Minutes</option>
-                  <option value='r3600'>Past Hour</option>
-                  <option value='r7200'>Past 2 Hours</option>
-                  <option value='r86400'>Past 24 Hours</option>
-                </select>
-              </div>
-            </div>
+            )}
             <div className='edit-button-container'>
               <button
                 type='button'
-                onClick={() => handleCancel()}
+                onClick={handleCancel}
                 className='edit-cancel-button'
               >
                 Cancel
               </button>
-              <button className='edit-save-button'>Save</button>
+              <button type='submit' className='edit-save-button'>
+                Save
+              </button>
             </div>
           </form>
         </>
@@ -135,12 +145,12 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
           >
             <p className='card-title'>{search.keywords}</p>
             <p className='card-meta'>
-              {`${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
-                search.searchRadius
-              } miles`}
+              {metaData &&
+                `${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
+                  search.searchRadius
+                } miles`}
             </p>
           </a>
-
           <button
             type='button'
             onClick={() => onDelete(search.id)}
@@ -148,7 +158,6 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
           >
             <Trash size={12} className='icon-delete' />
           </button>
-
           <button
             type='button'
             onClick={() => setIsEditing(!isEditing)}
