@@ -50,7 +50,6 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           <span className='errors'>{errors.keywords.message}</span>
         )}
       </div>
-
       <div>
         <label htmlFor='searchRadius' className='search-label'>
           Search Radius (miles):
@@ -84,7 +83,6 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           Select the time frame to filter jobs.
         </span>
       </div>
-
       <div>
         <label htmlFor='sortBy' className='search-label'>
           Sort By:
@@ -97,7 +95,6 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           Select how you want the job listings to be sorted.
         </span>
       </div>
-
       <button type='submit' disabled={isSubmitting} className='search-button'>
         {isSubmitting ? 'Searching...' : 'Go to LinkedIn'}
       </button>

@@ -1,10 +1,14 @@
 import { Trash, Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { parse } from 'tldts';
 
 import type { SavedSearch, LinkedInSearch, EditFields } from '../types';
-import { decodeTimeFrame, decodeSortBy } from '../utils/decorders';
+import {
+  decodeTimeFrame,
+  decodeSortBy,
+  getBaseDomain,
+  isLinkedInSearch,
+} from '../utils';
 
 type SavedSearchCardProps = {
   search: SavedSearch;
@@ -12,24 +16,16 @@ type SavedSearchCardProps = {
   onEdit: (edited: SavedSearch) => void;
 };
 
-const isLinkedInSearch = (search: SavedSearch): search is LinkedInSearch => {
-  return (
-    'searchRadius' in search &&
-    'sortBy' in search &&
-    'time' in search &&
-    typeof search.searchRadius === 'number'
-  );
-};
-
 function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const isLinkedIn = isLinkedInSearch(search);
+  const domain = getBaseDomain(search.url);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<EditFields>({
     defaultValues: isLinkedIn
       ? {
@@ -41,19 +37,6 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
           keywords: search.keywords,
         },
   });
-
-  const getBaseDomain = (url: string): string | false => {
-    const parsed = parse(url);
-
-    if (parsed.isIp || !parsed.domainWithoutSuffix) return false;
-
-    return (
-      parsed.domainWithoutSuffix.charAt(0).toUpperCase() +
-      parsed.domainWithoutSuffix.slice(1)
-    );
-  };
-
-  const domain = getBaseDomain(search.url);
 
   const handleEditSubmit = (data: EditFields) => {
     let edited: SavedSearch = {

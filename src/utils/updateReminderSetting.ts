@@ -15,4 +15,4 @@ const updateReminderSettings = (updates: Partial<{ frequency: string; enabled: b
   });
 };
  
-export default updateReminderSettings
+export { updateReminderSettings }

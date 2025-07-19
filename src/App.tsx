@@ -9,6 +9,7 @@ import type {
   LinkedInSearch,
   LinkedInSearchFields,
 } from './types/index';
+import { buildLinkedInSearchUrl } from './utils/index';
 
 function App() {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
@@ -27,23 +28,6 @@ function App() {
       setSearches(sorted);
     });
   }, []);
-
-  const buildLinkedInSearchUrl = ({
-    keywords,
-    searchRadius,
-    time,
-    sortBy,
-  }: Pick<LinkedInSearch, 'keywords' | 'searchRadius' | 'time' | 'sortBy'>) => {
-    const base = 'https://www.linkedin.com/jobs/search/';
-    const params = new URLSearchParams({
-      keywords: keywords,
-      distance: String(searchRadius),
-      f_TPR: time,
-      sortBy: sortBy,
-      geoId: '90000070',
-    });
-    return `${base}?${params}`;
-  };
 
   const onSubmit = async (data: LinkedInSearchFields): Promise<void> => {
     //remove eventually
