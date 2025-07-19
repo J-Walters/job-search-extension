@@ -1,9 +1,9 @@
 import { useForm } from 'react-hook-form';
 
-import type { FormFields } from '../types/index';
+import type { LinkedInSearchFields } from '../types/index';
 
 type LinkedInSearchFormProps = {
-  onSubmit: (data: FormFields) => Promise<void>;
+  onSubmit: (data: LinkedInSearchFields) => Promise<void>;
 };
 
 function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
@@ -12,7 +12,7 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FormFields>({
+  } = useForm<LinkedInSearchFields>({
     defaultValues: {
       keywords: '',
       searchRadius: 25,
@@ -21,7 +21,7 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
     },
   });
 
-  const handleLocalSubmit = async (data: FormFields) => {
+  const handleLocalSubmit = async (data: LinkedInSearchFields) => {
     await onSubmit(data);
     reset();
   };
@@ -36,6 +36,7 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           Keywords:
         </label>
         <input
+          id='keywords'
           autoFocus
           className='search-input'
           type='text'

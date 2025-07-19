@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { SavedSearch } from '../types';
+import type { SavedSearch, ManualSearch } from '../types';
 import SavedSearchCard from './SavedSearchCard';
 
 type SavedSearchListProps = {
@@ -10,11 +10,11 @@ type SavedSearchListProps = {
   setSearches: React.Dispatch<React.SetStateAction<SavedSearch[]>>;
 };
 
-type FormInputs = Omit<SavedSearch, 'id' | 'searchRadius' | 'time' | 'sortBy'>;
+type FormInputs = Omit<ManualSearch, 'id'>;
 
 function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
-  const [addNew, setAddNew] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [addNew, setAddNew] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
 
   const {
     register,
@@ -22,7 +22,7 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm<FormInputs>();
 
   const handleDelete = (id: string) => {
     const updatedSearches = searches.filter((search) => search.id !== id);
@@ -47,18 +47,18 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
       active: true,
       lastFocusedWindow: true,
     });
-    setValue('url', tab.url);
+    setValue('url', tab.url ?? '');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: FormInputs) => {
     chrome.storage.local.get(['searches'], (result) => {
       const existingSearches = Array.isArray(result.searches)
         ? (result.searches as SavedSearch[])
         : [];
 
-      const newSearch = {
+      const newSearch: ManualSearch = {
         id: nanoid(),
         ...data,
         created_at: new Date().toISOString(),
@@ -113,7 +113,7 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
             />
             {errors.url && (
               <p className='text-xs text-red-400 mt-1'>
-                Keywords cannot be empty.
+                Please enter a valid URL.
               </p>
             )}
             <button
@@ -167,13 +167,6 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
           {/* Gradient overlay */}
           {/* <div className='pointer-events-none absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent' />
           </div> */}
-
-          {/* <button
-            type='button'
-            className='w-full mt-4 py-2 rounded-2xl bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100 hover:shadow-md active:shadow-inner transition'
-          >
-            Add New Search
-          </button> */}
         </>
       ) : (
         <p className='text-sm text-gray-500'>No saved searches</p>

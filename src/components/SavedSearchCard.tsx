@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { parse } from 'tldts';
 
-import type { SavedSearch, TimeFrameKey, EditableFields } from '../types';
-import { decodeTimeFrame, decodeSortBy } from '../utils/decodeTimeFrame';
+import type { SavedSearch, LinkedInSearch, EditFields } from '../types';
+import { decodeTimeFrame, decodeSortBy } from '../utils/decorders';
 
 type SavedSearchCardProps = {
   search: SavedSearch;
@@ -12,26 +12,38 @@ type SavedSearchCardProps = {
   onEdit: (edited: SavedSearch) => void;
 };
 
+const isLinkedInSearch = (search: SavedSearch): search is LinkedInSearch => {
+  return (
+    'searchRadius' in search &&
+    'sortBy' in search &&
+    'time' in search &&
+    typeof search.searchRadius === 'number'
+  );
+};
+
 function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const isLinkedIn = isLinkedInSearch(search);
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<EditableFields>({
-    defaultValues: {
-      keywords: search.keywords,
-      searchRadius: search.searchRadius,
-      time: search.time,
-    },
+  } = useForm<EditFields>({
+    defaultValues: isLinkedIn
+      ? {
+          keywords: search.keywords,
+          searchRadius: (search as LinkedInSearch).searchRadius,
+          time: (search as LinkedInSearch).time,
+        }
+      : {
+          keywords: search.keywords,
+        },
   });
-
-  const metaData = search.searchRadius && search.time && search.sortBy;
 
   const getBaseDomain = (url: string): string | false => {
     const parsed = parse(url);
-    console.log(parsed);
 
     if (parsed.isIp || !parsed.domainWithoutSuffix) return false;
 
@@ -43,22 +55,24 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
 
   const domain = getBaseDomain(search.url);
 
-  const handleEditSubmit = (data: EditableFields) => {
-    console.log('data', data);
-    const edited: SavedSearch = {
+  const handleEditSubmit = (data: EditFields) => {
+    let edited: SavedSearch = {
       ...search,
       ...data,
       created_at: new Date().toISOString(),
     };
 
-    const parsed = new URL(search.url);
-    const params = parsed.searchParams;
-
-    params.set('f_TPR', edited.time);
-    params.set('distance', String(edited.searchRadius));
-    params.set('keywords', edited.keywords);
-
-    edited.url = parsed.toString();
+    if (isLinkedInSearch(edited)) {
+      const parsed = new URL(search.url);
+      const params = parsed.searchParams;
+      params.set('f_TPR', edited.time);
+      params.set('distance', String(edited.searchRadius));
+      params.set('keywords', edited.keywords);
+      edited = {
+        ...edited,
+        url: parsed.toString(),
+      };
+    }
 
     onEdit(edited);
     setIsEditing(false);
@@ -72,84 +86,78 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
   return (
     <li className='card'>
       {isEditing ? (
-        <>
-          <form
-            className='w-full space-y-2 text-sm'
-            onSubmit={handleSubmit(handleEditSubmit)}
-          >
-            <div>
-              <label htmlFor='keywords' className='sr-only'>
-                Keywords:
-              </label>
-              <input
-                autoFocus
-                id='keywords'
-                type='text'
-                placeholder='e.g., Software Engineer'
-                className='edit-input w-full '
-                {...register('keywords', {
-                  required: 'Please enter a keyword.',
-                  validate: (v) => v.trim() !== '',
-                })}
-              />
-              {errors.keywords && (
-                <span className='edit-error'>{errors.keywords.message}</span>
-              )}
-            </div>
-            {metaData && (
-              <div className='grid grid-cols-[auto_1fr] gap-7 items-end'>
-                <div>
-                  <label htmlFor='searchRadius' className='sr-only'>
-                    Radius (miles):
-                  </label>
-                  <input
-                    id='searchRadius'
-                    type='number'
-                    placeholder='25'
-                    className='edit-input w-[96px]'
-                    {...register('searchRadius', {
-                      required: 'Search radius is required.',
-                      min: { value: 1, message: 'Minimum value is 1 mile.' },
-                      valueAsNumber: true,
-                    })}
-                  />
-                  {errors.searchRadius && (
-                    <span className='edit-error'>
-                      {errors.searchRadius.message}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor='time' className='sr-only'>
-                    Time Frame:
-                  </label>
-                  <select
-                    id='time'
-                    className='edit-input'
-                    {...register('time')}
-                  >
-                    <option value='r1800'>Past 30 Minutes</option>
-                    <option value='r3600'>Past Hour</option>
-                    <option value='r7200'>Past 2 Hours</option>
-                    <option value='r86400'>Past 24 Hours</option>
-                  </select>
-                </div>
-              </div>
+        <form
+          className='w-full space-y-2 text-sm'
+          onSubmit={handleSubmit(handleEditSubmit)}
+        >
+          <div>
+            <label htmlFor='keywords' className='sr-only'>
+              Keywords:
+            </label>
+            <input
+              autoFocus
+              id='keywords'
+              type='text'
+              placeholder='e.g., Software Engineer'
+              className='edit-input w-full '
+              {...register('keywords', {
+                required: 'Please enter a keyword.',
+                validate: (v) => v.trim() !== '',
+              })}
+            />
+            {errors.keywords && (
+              <span className='edit-error'>{errors.keywords.message}</span>
             )}
-            <div className='edit-button-container'>
-              <button
-                type='button'
-                onClick={handleCancel}
-                className='edit-cancel-button'
-              >
-                Cancel
-              </button>
-              <button type='submit' className='edit-save-button'>
-                Save
-              </button>
+          </div>
+          {isLinkedIn && (
+            <div className='grid grid-cols-[auto_1fr] gap-7 items-end'>
+              <div>
+                <label htmlFor='searchRadius' className='sr-only'>
+                  Radius (miles):
+                </label>
+                <input
+                  id='searchRadius'
+                  type='number'
+                  placeholder='25'
+                  className='edit-input w-[96px]'
+                  {...register('searchRadius', {
+                    required: 'Search radius is required.',
+                    min: { value: 1, message: 'Minimum value is 1 mile.' },
+                    valueAsNumber: true,
+                  })}
+                />
+                {errors.searchRadius && (
+                  <span className='edit-error'>
+                    {errors.searchRadius.message}
+                  </span>
+                )}
+              </div>
+              <div>
+                <label htmlFor='time' className='sr-only'>
+                  Time Frame:
+                </label>
+                <select id='time' className='edit-input' {...register('time')}>
+                  <option value='r1800'>Past 30 Minutes</option>
+                  <option value='r3600'>Past Hour</option>
+                  <option value='r7200'>Past 2 Hours</option>
+                  <option value='r86400'>Past 24 Hours</option>
+                </select>
+              </div>
             </div>
-          </form>
-        </>
+          )}
+          <div className='edit-button-container'>
+            <button
+              type='button'
+              onClick={handleCancel}
+              className='edit-cancel-button'
+            >
+              Cancel
+            </button>
+            <button type='submit' className='edit-save-button'>
+              Save
+            </button>
+          </div>
+        </form>
       ) : (
         <>
           <a
@@ -159,21 +167,19 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
             className='card-content'
           >
             <p className='card-title'>{search.keywords}</p>
-            {metaData && (
+            {isLinkedIn && (
               <>
                 <p className='card-meta'>
-                  {`${decodeTimeFrame(search.time as TimeFrameKey)} • within ${
+                  {`${decodeTimeFrame(search.time)} • within ${
                     search.searchRadius
                   } miles`}
                 </p>
+                <span className='edit-save-button'>
+                  {decodeSortBy(search.sortBy)}
+                </span>
               </>
             )}
-            {domain && <span className='edit-save-button mr-2'>{domain}</span>}
-            {metaData && (
-              <span className='edit-save-button'>
-                {decodeSortBy(search.sortBy as 'DD' | 'R')}
-              </span>
-            )}
+            {domain && <span className='edit-save-button ml-2'>{domain}</span>}
           </a>
           <button
             type='button'

@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import LinkedInSearchForm from './components/LinkedInSearchForm';
 import SavedSearchList from './components/SavedSearchList';
 import Settings from './components/Settings';
-import type { FormFields, SavedSearch } from './types/index';
+import type {
+  SavedSearch,
+  LinkedInSearch,
+  LinkedInSearchFields,
+} from './types/index';
 
 function App() {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
@@ -29,7 +33,7 @@ function App() {
     searchRadius,
     time,
     sortBy,
-  }: FormFields) => {
+  }: Pick<LinkedInSearch, 'keywords' | 'searchRadius' | 'time' | 'sortBy'>) => {
     const base = 'https://www.linkedin.com/jobs/search/';
     const params = new URLSearchParams({
       keywords: keywords,
@@ -41,7 +45,7 @@ function App() {
     return `${base}?${params}`;
   };
 
-  const onSubmit = async (data: FormFields): Promise<void> => {
+  const onSubmit = async (data: LinkedInSearchFields): Promise<void> => {
     //remove eventually
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -52,7 +56,7 @@ function App() {
         ? (result.searches as SavedSearch[])
         : [];
 
-      const newSearch: SavedSearch = {
+      const newSearch: LinkedInSearch = {
         id: nanoid(),
         ...data,
         url,
@@ -94,12 +98,12 @@ function App() {
       <header className='flex flex-col'>
         <div className='flex items-center justify-between'>
           <h1 className='text-2xl font-semibold'>Clocked In</h1>
-          <button
+          {/* <button
             type='button'
             className='px-3 py-1 rounded-lg bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100'
           >
             Sign In
-          </button>
+          </button> */}
         </div>
         <nav className='mt-6 flex justify-between rounded-xl bg-white px-2 py-1.5 shadow-sm border border-gray-100 text-gray-600 text-sm'>
           {tabs.map((tab) => (

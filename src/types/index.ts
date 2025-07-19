@@ -1,18 +1,38 @@
-interface FormFields {
-  keywords: string;
-  searchRadius: number;
-  time: string;
-  sortBy: string;
-}
+type TimeFrameKey = 'r1800' | 'r3600' | 'r7200' | 'r86400';
+type SortByKey = 'DD' | 'R'
+type LinkedInSearchFields = Omit<LinkedInSearch, 'id' | 'url' | 'created_at'>;
+type SavedSearch = LinkedInSearch | ManualSearch
 
-interface SavedSearch extends FormFields {
+interface LinkedInSearch {
   id: string;
   url: string;
+  keywords: string;
+  created_at: string;
+  searchRadius: number;
+  time: TimeFrameKey;
+  sortBy: SortByKey;
+}
+
+interface ManualSearch {
+  id: string;
+  url: string;
+  keywords: string;
   created_at: string;
 }
 
-type TimeFrameKey = 'r1800' | 'r3600' | 'r7200' | 'r86400';
 
-type EditableFields = Pick<SavedSearch, 'keywords' | 'searchRadius' | 'time'>;
+type EditFields = {
+  keywords: string;
+  searchRadius?: number;
+  time?: TimeFrameKey;
+};
 
-export type {FormFields, SavedSearch, TimeFrameKey, EditableFields} 
+export type {
+  SavedSearch,
+  LinkedInSearch,
+  LinkedInSearchFields,
+  ManualSearch,
+  TimeFrameKey,
+  SortByKey,
+  EditFields
+};
