@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 
 import type { SavedSearch } from '../types';
-import updateReminderSettings from '../utils/updateReminderSetting';
+import { updateReminderSettings } from '../utils';
 
 type SettingsProps = {
   searches: SavedSearch[];
@@ -117,76 +117,105 @@ function Settings({ searches, setSearches }: SettingsProps) {
 
   return (
     <>
-      <h2>Filters Searches By Company</h2>
-      {tags.length > 0 &&
-        tags.map((tag) => {
-          return (
-            <div key={tag.id}>
-              <span>{tag.company}</span>
-              <button type='button' onClick={() => handleDelete(tag.id)}>
-                x
-              </button>
-            </div>
-          );
-        })}
-      <input
-        value={tagText}
-        onChange={(e) => setTagText(e.target.value)}
-        className='border border-amber-200'
-      />
-      {tagError && <p>Cannot submit an empty string.</p>}
-      <button type='submit' onClick={handleAddTags}>
-        submit
-      </button>
-      <h2>Notifications</h2>
-      <label
-        htmlFor='reminders-toggle'
-        className='text-sm font-medium text-gray-700'
-      >
-        Enable Reminders
-      </label>
-      <br />
-      <input
-        id='reminders-toggle'
-        type='checkbox'
-        checked={remindersEnabled}
-        onChange={(e) => handleToggle(e.target.checked)}
-        className="appearance-none w-10 h-5 bg-gray-300 rounded-full shadow-inner checked:bg-violet-500 transition relative before:content-[''] before:absolute before:left-1 before:top-1 before:w-3 before:h-3 before:bg-white before:rounded-full before:transition-transform checked:before:translate-x-5"
-      />
-      <br />
-      <label htmlFor='notifications'>Reminder Frequency</label>
-      <select
-        id='notifications'
-        name='notifications'
-        disabled={!remindersEnabled}
-        value={reminderFrequency}
-        className={`... ${
-          !remindersEnabled ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-        style={{
-          border: '2px solid #C97C4A',
-          borderRadius: '12px',
-          padding: '0 16px',
-          height: '40px',
-          fontSize: '14px',
-          background: '#efd9b5',
-          color: '#5d3520',
-          transition: 'border-color 0.2s, box-shadow 0.2s',
-        }}
-        onChange={(e) => {
-          handleFrequencyChange(e.target.value);
-        }}
-      >
-        <option value=''>Select a Frequency</option>
-        <option value='5'>Every 5 Minutes</option>
-        {/* <option value='60'>Every Hour</option> */}
-        {/* <option value='120'>Every 2 Hours</option>
-        <option value='180'>Every 3 Hours</option>
-        <option value='360'>Every 6 Hours</option>
-        <option value='720'>Every 12 Hours</option>
-        <option value='1440'>Daily</option>
-        <option value='2880'>Every 2 Days</option> */}
-      </select>
+      <div className='space-y-2'>
+        <h2 className='text-sm font-medium text-gray-700'>
+          Filter Searches by Company
+        </h2>
+
+        {/* Tag List */}
+        <div className='flex flex-wrap gap-2 mt-2'>
+          {tags.length > 0 &&
+            tags.map((tag) => (
+              <span
+                key={tag.id}
+                className='flex items-center gap-1 text-xs px-3 py-1 rounded-full bg-gradient-to-b from-amber-100 to-amber-200 text-amber-800 shadow-sm border border-amber-200'
+              >
+                {tag.company}
+                <button
+                  type='button'
+                  className='cursor-pointer text-amber-500 hover:text-red-500 transition-colors font-bold'
+                  aria-label={`Remove ${tag.company}`}
+                  onClick={() => handleDelete(tag.id)}
+                >
+                  &times;
+                </button>
+              </span>
+            ))}
+        </div>
+
+        {/* Tag Input */}
+        <div className='mt-2'>
+          <label htmlFor='tag-input' className='sr-only'>
+            Add a company filter
+          </label>
+          <input
+            id='tag-input'
+            value={tagText}
+            onChange={(e) => setTagText(e.target.value)}
+            className='w-full px-3 py-1.5 text-sm border border-amber-200 rounded-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-300'
+            placeholder='Add company name...'
+          />
+          {tagError && (
+            <p className='text-xs text-red-400 mt-1'>
+              Cannot submit an empty string.
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <div>
+          <button
+            type='submit'
+            onClick={handleAddTags}
+            className='py-1.5 text-sm rounded-xl font-semibold text-white transition bg-gradient-to-b from-gray-300 to-gray-400 shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)] active:shadow-inner mt-1 w-full'
+          >
+            Add Filter
+          </button>
+        </div>
+      </div>
+
+      <div className='space-y-3 mt-6'>
+        <h2 className='text-sm font-medium text-gray-700'>Notifications</h2>
+
+        <div className='flex items-center justify-between'>
+          <label
+            htmlFor='reminders-toggle'
+            className='text-sm font-medium text-gray-700'
+          >
+            Enable Reminders
+          </label>
+          <input
+            id='reminders-toggle'
+            type='checkbox'
+            checked={remindersEnabled}
+            onChange={(e) => handleToggle(e.target.checked)}
+            className="appearance-none w-10 h-5 bg-gradient-to-b from-gray-200 to-gray-100 rounded-full shadow-inner checked:bg-gradient-to-b checked:from-violet-400 checked:to-violet-500 transition relative before:content-[''] before:absolute before:left-1 before:top-1 before:w-3 before:h-3 before:bg-white before:rounded-full before:transition-transform checked:before:translate-x-5"
+          />
+        </div>
+
+        <div className='space-y-1'>
+          <label
+            htmlFor='notifications'
+            className='text-sm font-medium text-gray-700'
+          >
+            Reminder Frequency
+          </label>
+          <select
+            id='notifications'
+            name='notifications'
+            disabled={!remindersEnabled}
+            value={reminderFrequency}
+            onChange={(e) => handleFrequencyChange(e.target.value)}
+            className={`w-full mt-1 rounded-xl px-4 h-10 text-sm text-violet-800 bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-300 shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-400 transition duration-200 ${
+              !remindersEnabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            <option value=''>Select a Frequency</option>
+            <option value='5'>Every 5 Minutes</option>
+          </select>
+        </div>
+      </div>
+
       <button
         type='button'
         onClick={handleClear}
