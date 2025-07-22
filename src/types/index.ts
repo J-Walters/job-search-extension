@@ -27,6 +27,13 @@ type EditFields = {
   time?: TimeFrameKey;
 };
 
+type FormInputs = Omit<ManualSearch, 'id'>;
+
+interface Tags {
+  id: string;
+  company: string;
+}
+
 export type {
   SavedSearch,
   LinkedInSearch,
@@ -34,5 +41,7 @@ export type {
   ManualSearch,
   TimeFrameKey,
   SortByKey,
-  EditFields
+  EditFields,
+  FormInputs,
+  Tags
 };

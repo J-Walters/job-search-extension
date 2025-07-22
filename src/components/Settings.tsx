@@ -1,18 +1,13 @@
 import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 
-import type { SavedSearch } from '../types';
+import type { SavedSearch, Tags } from '../types';
 import { updateReminderSettings } from '../utils';
 
 type SettingsProps = {
   searches: SavedSearch[];
   setSearches: React.Dispatch<React.SetStateAction<SavedSearch[]>>;
 };
-
-interface Tags {
-  id: string;
-  company: string;
-}
 
 function Settings({ searches, setSearches }: SettingsProps) {
   const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
@@ -37,6 +32,8 @@ function Settings({ searches, setSearches }: SettingsProps) {
       setTags([...existingTags]);
     });
   }, []);
+
+  chrome.storage.local.get(console.log);
 
   const handleToggle = (newValue: boolean) => {
     updateReminderSettings({ enabled: newValue, frequency: reminderFrequency });
@@ -121,8 +118,6 @@ function Settings({ searches, setSearches }: SettingsProps) {
         <h2 className='text-sm font-medium text-gray-700'>
           Filter Searches by Company
         </h2>
-
-        {/* Tag List */}
         <div className='flex flex-wrap gap-2 mt-2'>
           {tags.length > 0 &&
             tags.map((tag) => (
@@ -142,8 +137,6 @@ function Settings({ searches, setSearches }: SettingsProps) {
               </span>
             ))}
         </div>
-
-        {/* Tag Input */}
         <div className='mt-2'>
           <label htmlFor='tag-input' className='sr-only'>
             Add a company filter
@@ -161,8 +154,6 @@ function Settings({ searches, setSearches }: SettingsProps) {
             </p>
           )}
         </div>
-
-        {/* Submit Button */}
         <div>
           <button
             type='submit'

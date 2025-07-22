@@ -16,6 +16,10 @@ export default defineManifest({
     service_worker: 'src/background/index.ts',
     type: 'module',
   },
+  content_scripts: [{
+    js: ['src/content/index.ts'],
+    matches: ['https://www.linkedin.com/jobs/*']
+  }],
   permissions: ['tabs', 'storage', 'alarms', 'notifications'],
   host_permissions: ['<all_urls>'],
 });
