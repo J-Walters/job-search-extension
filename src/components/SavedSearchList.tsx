@@ -83,6 +83,7 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
             Keywords:
           </label>
           <input
+            autoFocus
             id='keywords'
             type='text'
             placeholder='e.g. Software Engineer - Builtin'
@@ -135,7 +136,11 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
           >
             Cancel
           </button>
-          <button type='submit' className='edit-save-button'>
+          <button
+            type='submit'
+            className='edit-save-button'
+            disabled={isSubmitting}
+          >
             Save
           </button>
         </form>

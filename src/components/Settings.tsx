@@ -33,8 +33,6 @@ function Settings({ searches, setSearches }: SettingsProps) {
     });
   }, []);
 
-  chrome.storage.local.get(console.log);
-
   const handleToggle = (newValue: boolean) => {
     updateReminderSettings({ enabled: newValue, frequency: reminderFrequency });
     setRemindersEnabled(newValue);
