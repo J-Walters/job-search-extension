@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import type { LinkedInSearchFields } from '../types/index';
 
 type LinkedInSearchFormProps = {
-  onSubmit: (data: LinkedInSearchFields) => Promise<void>;
+  onSubmit: (data: LinkedInSearchFields) => void;
 };
 
 function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
@@ -21,8 +21,8 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
     },
   });
 
-  const handleLocalSubmit = async (data: LinkedInSearchFields) => {
-    await onSubmit(data);
+  const handleLocalSubmit = (data: LinkedInSearchFields) => {
+    onSubmit(data);
     reset();
   };
 
@@ -96,7 +96,7 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
         </span>
       </div>
       <button type='submit' disabled={isSubmitting} className='search-button'>
-        {isSubmitting ? 'Searching...' : 'Go to LinkedIn'}
+        {isSubmitting ? 'Searching...' : 'Search on LinkedIn'}
       </button>
     </form>
   );

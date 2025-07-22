@@ -29,10 +29,7 @@ function App() {
     });
   }, []);
 
-  const onSubmit = async (data: LinkedInSearchFields): Promise<void> => {
-    //remove eventually
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+  const onSubmit = (data: LinkedInSearchFields) => {
     const url = buildLinkedInSearchUrl(data);
 
     chrome.storage.local.get(['searches'], (result) => {
@@ -82,12 +79,6 @@ function App() {
       <header className='flex flex-col'>
         <div className='flex items-center justify-between'>
           <h1 className='text-2xl font-semibold'>Clocked In</h1>
-          {/* <button
-            type='button'
-            className='px-3 py-1 rounded-lg bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100'
-          >
-            Sign In
-          </button> */}
         </div>
         <nav className='mt-6 flex justify-between rounded-xl bg-white px-2 py-1.5 shadow-sm border border-gray-100 text-gray-600 text-sm'>
           {tabs.map((tab) => (
