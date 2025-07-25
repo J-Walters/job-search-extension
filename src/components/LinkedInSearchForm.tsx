@@ -47,7 +47,7 @@ function LinkedInSearchForm({ onSubmit }: LinkedInSearchFormProps) {
           })}
         />
         {errors.keywords && (
-          <span className='errors'>{errors.keywords.message}</span>
+          <span className='search-error'>{errors.keywords.message}</span>
         )}
       </div>
       <div>
