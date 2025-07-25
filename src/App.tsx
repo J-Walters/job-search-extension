@@ -1,3 +1,4 @@
+import { Search, Bookmark, Settings as SettingsIcon } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
 
@@ -58,11 +59,13 @@ function App() {
     {
       id: 'search',
       label: 'Search',
+      icon: <Search size={14} className='align-middle relative top-[1px]' />,
       content: <LinkedInSearchForm onSubmit={onSubmit} />,
     },
     {
       id: 'saved',
       label: 'Saved',
+      icon: <Bookmark size={14} className='align-middle relative top-[1px]' />,
       content: (
         <SavedSearchList searches={searches} setSearches={setSearches} />
       ),
@@ -70,28 +73,34 @@ function App() {
     {
       id: 'settings',
       label: 'Settings',
+      icon: (
+        <SettingsIcon size={14} className='align-middle relative top-[1px]' />
+      ),
       content: <Settings searches={searches} setSearches={setSearches} />,
     },
   ];
 
   return (
-    <div className='max-h-[640px] w-full flex flex-col mx-auto p-4 rounded-2xl bg-gray-50 shadow-[0_0_20px_rgba(139,92,246,0.5)]'>
-      <header className='flex flex-col'>
-        <div className='flex items-center justify-between'>
-          <h1 className='text-2xl font-semibold'>Clocked In</h1>
-        </div>
-        <nav className='mt-6 flex justify-between rounded-xl bg-white px-2 py-1.5 shadow-sm border border-gray-100 text-gray-600 text-sm'>
+    <div className='header-container'>
+      <header className='header'>
+        <h1 className='ext-name'>Clocked In</h1>
+        <span className='ext-tagline'>
+          Find jobs. Stay organized. Apply faster.
+        </span>
+        <nav className='nav-bar'>
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-3 rounded-lg transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-violet-100 text-violet-700 font-semibold'
-                  : 'hover:bg-gray-100'
-              }`}
+              className={`nav-tab
+                ${
+                  activeTab === tab.id
+                    ? 'border-[#9d86f5] text-[#9d86f5] font-semibold'
+                    : 'border-transparent text-gray-500'
+                }`}
             >
-              {tab.label}
+              {tab.icon}
+              <span>{tab.label}</span>
             </button>
           ))}
         </nav>
