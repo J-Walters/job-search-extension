@@ -67,14 +67,14 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
   };
 
   return (
-    <li className='card'>
+    <li className={`card ${isEditing ? 'card-editing' : ''}`}>
       {isEditing ? (
         <form
           className='w-full space-y-2 text-sm'
           onSubmit={handleSubmit(handleEditSubmit)}
         >
           <div>
-            <label htmlFor='keywords' className='sr-only'>
+            <label htmlFor='keywords' className='edit-label'>
               Keywords:
             </label>
             <input
@@ -89,13 +89,13 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
               })}
             />
             {errors.keywords && (
-              <span className='edit-error'>{errors.keywords.message}</span>
+              <span className='form-error'>{errors.keywords.message}</span>
             )}
           </div>
           {isLinkedIn && (
             <div className='grid grid-cols-[auto_1fr] gap-7 items-end'>
               <div>
-                <label htmlFor='searchRadius' className='sr-only'>
+                <label htmlFor='searchRadius' className='edit-label'>
                   Radius (miles):
                 </label>
                 <input
@@ -110,13 +110,13 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
                   })}
                 />
                 {errors.searchRadius && (
-                  <span className='edit-error'>
+                  <span className='form-error'>
                     {errors.searchRadius.message}
                   </span>
                 )}
               </div>
               <div>
-                <label htmlFor='time' className='sr-only'>
+                <label htmlFor='time' className='edit-label'>
                   Time Frame:
                 </label>
                 <select id='time' className='edit-input' {...register('time')}>
@@ -157,12 +157,13 @@ function SavedSearchCard({ search, onDelete, onEdit }: SavedSearchCardProps) {
                     search.searchRadius
                   } miles`}
                 </p>
-                <span className='edit-save-button'>
+                <span className='card-chip-linkedin mr-2'>{domain}</span>
+                <span className='card-chip-primary mr-2'>
                   {decodeSortBy(search.sortBy)}
                 </span>
               </>
             )}
-            {domain && <span className='edit-save-button ml-2'>{domain}</span>}
+            {!isLinkedIn && <span className='card-chip-domain'>{domain}</span>}
           </a>
           <button
             type='button'

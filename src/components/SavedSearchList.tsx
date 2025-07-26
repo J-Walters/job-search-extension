@@ -1,3 +1,4 @@
+import { PlusCircle } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -145,13 +146,16 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
           </button>
         </form>
       ) : (
-        <button
-          type='button'
-          onClick={() => setAddNew(true)}
-          className='w-full mb-4 py-2 rounded-2xl bg-white text-gray-600 text-sm font-medium shadow-sm border border-gray-100 hover:shadow-md active:shadow-inner transition'
-        >
-          Add New Search
-        </button>
+        <div className='flex justify-center mb-3'>
+          <button
+            type='button'
+            onClick={() => setAddNew(true)}
+            className='add-new-btn'
+          >
+            <PlusCircle size={14} className='inline-block' />
+            Add New Search
+          </button>
+        </div>
       )}
       {searches.length > 0 ? (
         <>
