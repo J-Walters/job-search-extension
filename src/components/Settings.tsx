@@ -1,5 +1,7 @@
+import { Download, CircleX } from 'lucide-react';
 import { nanoid } from 'nanoid';
 import { useState, useEffect } from 'react';
+import type { KeyboardEvent } from 'react';
 
 import type { SavedSearch, Tags } from '../types';
 import { updateReminderSettings } from '../utils';
@@ -14,7 +16,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
   const [reminderFrequency, setReminderFrequency] = useState<string>('');
   const [tags, setTags] = useState<Tags[]>([]);
   const [tagText, setTagText] = useState<string>('');
-  const [tagError, setTagError] = useState(false);
+  const [tagError, setTagError] = useState<boolean>(false);
 
   useEffect(() => {
     chrome.storage.local.get('settings', (result) => {
@@ -110,120 +112,150 @@ function Settings({ searches, setSearches }: SettingsProps) {
     chrome.storage.local.set({ companyTags: updatedTags });
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleAddTags();
+    }
+  };
+
   return (
-    <>
-      <div className='space-y-2'>
-        <h2 className='text-sm font-medium text-gray-700'>
-          Filter Searches by Company
+    <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar overflow-visible'>
+      <div>
+        <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase mb-2'>
+          Theme
         </h2>
-        <div className='flex flex-wrap gap-2 mt-2'>
-          {tags.length > 0 &&
-            tags.map((tag) => (
+        <select
+          id='theme'
+          name='theme'
+          className='search-input w-full max-w-full'
+          // value={theme}
+          // onChange={handleThemeChange}
+        >
+          <option value=''>Select a Theme</option>
+          <option value='light'>Light</option>
+          <option value='dark'>Dark</option>
+          <option value='system'>System</option>
+        </select>
+      </div>
+      <hr className='my-5 border-t border-[#ece9fd]' />
+      <div>
+        <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1'>
+          Company Filters
+        </h2>
+        <span className='search-subtext'>
+          Exclude these companies from you search
+        </span>
+        <div className='relative max-w-full'>
+          <div className='flex flex-nowrap gap-1 overflow-x-auto max-w-full pb-1 hide-scrollbar'>
+            {tags.map((tag) => (
               <span
                 key={tag.id}
-                className='flex items-center gap-1 text-xs px-3 py-1 rounded-full bg-gradient-to-b from-amber-100 to-amber-200 text-amber-800 shadow-sm border border-amber-200'
+                className='flex items-center h-7 px-3 rounded-full bg-white text-xs border border-[#9d86f5] text-[#9d86f5] whitespace-nowrap transition hover:bg-violet-50'
               >
-                {tag.company}
+                <span>{tag.company}</span>
                 <button
                   type='button'
-                  className='cursor-pointer text-amber-500 hover:text-red-500 transition-colors font-bold'
+                  className='ml-2 text-gray-400 hover:text-red-400 text-xs leading-none shrink-0'
                   aria-label={`Remove ${tag.company}`}
                   onClick={() => handleDelete(tag.id)}
+                  style={{ lineHeight: '1', height: '1.2em' }}
                 >
-                  &times;
+                  ×
                 </button>
               </span>
             ))}
-        </div>
-        <div className='mt-2'>
-          <label htmlFor='tag-input' className='sr-only'>
-            Add a company filter
-          </label>
-          <input
-            id='tag-input'
-            value={tagText}
-            onChange={(e) => setTagText(e.target.value)}
-            className='w-full px-3 py-1.5 text-sm border border-amber-200 rounded-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-300'
-            placeholder='Add company name...'
-          />
-          {tagError && (
-            <p className='text-xs text-red-400 mt-1'>
-              Cannot submit an empty string.
-            </p>
-          )}
-        </div>
-        <div>
-          <button
-            type='submit'
-            onClick={handleAddTags}
-            className='py-1.5 text-sm rounded-xl font-semibold text-white transition bg-gradient-to-b from-gray-300 to-gray-400 shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)] hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)] active:shadow-inner mt-1 w-full'
-          >
-            Add Filter
-          </button>
+          </div>
+          <div className='flex items-center gap-1 mt-1 max-w-full'>
+            <input
+              id='tag-input'
+              value={tagText}
+              onChange={(e) => setTagText(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e)}
+              className='search-input w-full max-w-full'
+              placeholder='Add company name…'
+            />
+            {tagError && (
+              <p className='form-error'>Cannot submit an empty string</p>
+            )}
+            <button
+              type='submit'
+              onClick={handleAddTags}
+              className='edit-save-button shrink-0'
+              style={{ minWidth: 52 }}
+            >
+              Block
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className='space-y-3 mt-6'>
-        <h2 className='text-sm font-medium text-gray-700'>Notifications</h2>
-
-        <div className='flex items-center justify-between'>
-          <label
-            htmlFor='reminders-toggle'
-            className='text-sm font-medium text-gray-700'
-          >
-            Enable Reminders
+      <hr className='my-5 border-t border-[#ece9fd]' />
+      <div>
+        <div className='flex items-center justify-between mt-6 mb-2'>
+          <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase'>
+            Notifications
+          </h2>
+          <label className='relative inline-flex items-center w-8 h-4 cursor-pointer group'>
+            <input
+              id='reminders-toggle'
+              type='checkbox'
+              checked={remindersEnabled}
+              onChange={(e) => handleToggle(e.target.checked)}
+              className='sr-only peer'
+              aria-label='Enable job reminder notifications'
+            />
+            <div className='w-full h-full bg-gray-300 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-[#9d86f5] rounded-full peer peer-checked:bg-[#9d86f5] transition-colors duration-300' />
+            <span className='absolute left-[1px] top-[0.5px] w-[14px] h-[14px] bg-white rounded-full transition-all duration-300 peer-checked:translate-x-[16px] shadow-sm' />
           </label>
-          <input
-            id='reminders-toggle'
-            type='checkbox'
-            checked={remindersEnabled}
-            onChange={(e) => handleToggle(e.target.checked)}
-            className="appearance-none w-10 h-5 bg-gradient-to-b from-gray-200 to-gray-100 rounded-full shadow-inner checked:bg-gradient-to-b checked:from-violet-400 checked:to-violet-500 transition relative before:content-[''] before:absolute before:left-1 before:top-1 before:w-3 before:h-3 before:bg-white before:rounded-full before:transition-transform checked:before:translate-x-5"
-          />
         </div>
-
         <div className='space-y-1'>
-          <label
-            htmlFor='notifications'
-            className='text-sm font-medium text-gray-700'
-          >
+          <label htmlFor='reminder-frequency' className='text-xs text-gray-700'>
             Reminder Frequency
           </label>
+          <span className='search-subtext'>
+            How often should we remind you to apply?
+          </span>
           <select
-            id='notifications'
-            name='notifications'
+            id='reminder-frequency'
+            name='reminder-frequency'
             disabled={!remindersEnabled}
             value={reminderFrequency}
             onChange={(e) => handleFrequencyChange(e.target.value)}
-            className={`w-full mt-1 rounded-xl px-4 h-10 text-sm text-violet-800 bg-gradient-to-b from-amber-100 to-amber-200 border border-amber-300 shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-400 transition duration-200 ${
+            className={`search-input w-full max-w-full ${
               !remindersEnabled ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             <option value=''>Select a Frequency</option>
             <option value='5'>Every 5 Minutes</option>
+            <option value='30'>Every 30 Minutes</option>
+            <option value='60'>Every Hour</option>
           </select>
         </div>
       </div>
-
-      <button
-        type='button'
-        onClick={handleClear}
-        disabled={!searches.length}
-        className='button-primary disabled:opacity-50'
-      >
-        Delete All Searches
-      </button>
-      <br />
-      <br />
-      <button
-        type='button'
-        onClick={handleExport}
-        disabled={!searches.length}
-        className='button-primary disabled:opacity-50'
-      >
-        Export All Searches
-      </button>
-    </>
+      <hr className='my-5 border-t border-[#ece9fd]' />
+      <div className='mt-8 space-y-2'>
+        <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase mb-2'>
+          Searches
+        </h2>
+        <button
+          type='button'
+          onClick={handleExport}
+          disabled={!searches.length}
+          className='add-new-btn w-full max-w-full flex items-center gap-2 justify-center'
+        >
+          <Download size={14} />
+          Export Searches
+        </button>
+        <button
+          type='button'
+          onClick={handleClear}
+          disabled={!searches.length}
+          className='delete-btn w-full max-w-full flex items-center gap-2 justify-center'
+        >
+          <CircleX size={14} />
+          Delete Searches
+        </button>
+      </div>
+    </div>
   );
 }
 

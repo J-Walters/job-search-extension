@@ -159,8 +159,7 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
       )}
       {searches.length > 0 ? (
         <>
-          {/* <div className='relative'> */}
-          <div className='max-h-[400px] overflow-y-auto pr-1'>
+          <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar'>
             <ul className='space-y-4'>
               {searches.map((search) => (
                 <SavedSearchCard
@@ -172,10 +171,6 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
               ))}
             </ul>
           </div>
-
-          {/* Gradient overlay */}
-          {/* <div className='pointer-events-none absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-white to-transparent' />
-          </div> */}
         </>
       ) : (
         <p className='text-sm text-gray-500'>No saved searches</p>
