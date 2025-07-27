@@ -3,6 +3,7 @@ type SortByKey = 'DD' | 'R'
 type LinkedInSearchFields = Omit<LinkedInSearch, 'id' | 'url' | 'created_at'>;
 type SavedSearch = LinkedInSearch | ManualSearch
 type SortOption = 'newest' | 'oldest' | 'az' | 'za';
+type FormInputs = Omit<ManualSearch, 'id'>;
 
 interface LinkedInSearch {
   id: string;
@@ -22,18 +23,21 @@ interface ManualSearch {
 }
 
 
-type EditFields = {
+interface EditFields {
   keywords: string;
   searchRadius?: number;
   time?: TimeFrameKey;
 };
 
-type FormInputs = Omit<ManualSearch, 'id'>;
-
 interface Tags {
   id: string;
   company: string;
 }
+
+interface ReminderSettings {
+  enabled: boolean;
+  frequency: number;
+};
 
 
 
@@ -47,5 +51,6 @@ export type {
   EditFields,
   FormInputs,
   Tags,
-  SortOption
+  SortOption,
+  ReminderSettings
 };

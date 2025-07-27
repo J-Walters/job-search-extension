@@ -1,10 +1,10 @@
 import { Download, CircleX } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 
-import type { SavedSearch, Tags } from '../types';
-import { updateReminderSettings } from '../utils';
+import { useChromeStorage } from '../hooks/useChromeStorage';
+import type { SavedSearch, Tags, ReminderSettings } from '../types';
 
 type SettingsProps = {
   searches: SavedSearch[];
@@ -12,46 +12,33 @@ type SettingsProps = {
 };
 
 function Settings({ searches, setSearches }: SettingsProps) {
-  const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
-  const [reminderFrequency, setReminderFrequency] = useState<string>('');
-  const [tags, setTags] = useState<Tags[]>([]);
+  const [reminderSettings, setReminderSettings] =
+    useChromeStorage<ReminderSettings>('reminderSettings', {
+      enabled: false,
+      frequency: 0,
+    });
+
+  const [companyTags, setCompanyTags] = useChromeStorage<Tags[]>(
+    'companyTags',
+    []
+  );
   const [tagText, setTagText] = useState<string>('');
   const [tagError, setTagError] = useState<boolean>(false);
 
-  useEffect(() => {
-    chrome.storage.local.get('settings', (result) => {
-      const reminder = result.settings?.reminderSettings;
-      if (reminder) {
-        setRemindersEnabled(reminder.enabled ?? false);
-        setReminderFrequency(String(reminder.frequency ?? '60'));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    chrome.storage.local.get(['companyTags'], (result) => {
-      const existingTags = result.companyTags ? result.companyTags : [];
-      setTags([...existingTags]);
-    });
-  }, []);
-
-  const handleToggle = (newValue: boolean) => {
-    updateReminderSettings({ enabled: newValue, frequency: reminderFrequency });
-    setRemindersEnabled(newValue);
+  const handleToggle = (enabled: boolean) => {
+    setReminderSettings({ ...reminderSettings, enabled });
   };
 
   const handleFrequencyChange = (value: string) => {
-    updateReminderSettings({ frequency: value, enabled: remindersEnabled });
-    setReminderFrequency(value);
+    const frequency = parseInt(value, 10) || 0;
+    setReminderSettings({ ...reminderSettings, frequency });
   };
 
   const handleClear = () => {
-    chrome.storage.local.set({ searches: [] });
     setSearches([]);
   };
 
   const convertToCSV = (data: SavedSearch[]): string => {
-    console.log('data', data);
     if (!data.length) return '';
 
     const keys = Object.keys(data[0]) as (keyof SavedSearch)[];
@@ -89,27 +76,21 @@ function Settings({ searches, setSearches }: SettingsProps) {
       return;
     }
 
-    chrome.storage.local.get('companyTags', (result) => {
-      const existingTags = result.companyTags ? result.companyTags : [];
+    const newTag: Tags = {
+      id: nanoid(),
+      company: tagText,
+    };
 
-      const newTag: Tags = {
-        id: nanoid(),
-        company: tagText,
-      };
+    const updatedTags = [newTag, ...companyTags];
 
-      const updatedTags = [newTag, ...existingTags];
-
-      chrome.storage.local.set({ companyTags: updatedTags });
-      setTags(updatedTags);
-      setTagText('');
-      setTagError(false);
-    });
+    setCompanyTags(updatedTags);
+    setTagText('');
+    setTagError(false);
   };
 
   const handleDelete = (id: string) => {
-    const updatedTags = tags.filter((tag) => tag.id !== id);
-    setTags(updatedTags);
-    chrome.storage.local.set({ companyTags: updatedTags });
+    const updatedTags = companyTags.filter((tag) => tag.id !== id);
+    setCompanyTags(updatedTags);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -121,24 +102,6 @@ function Settings({ searches, setSearches }: SettingsProps) {
   return (
     <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar overflow-visible'>
       <div>
-        <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase mb-2'>
-          Theme
-        </h2>
-        <select
-          id='theme'
-          name='theme'
-          className='search-input w-full max-w-full'
-          // value={theme}
-          // onChange={handleThemeChange}
-        >
-          <option value=''>Select a Theme</option>
-          <option value='light'>Light</option>
-          <option value='dark'>Dark</option>
-          <option value='system'>System</option>
-        </select>
-      </div>
-      <hr className='my-5 border-t border-[#ece9fd]' />
-      <div>
         <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1'>
           Company Filters
         </h2>
@@ -147,7 +110,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
         </span>
         <div className='relative max-w-full'>
           <div className='flex flex-nowrap gap-1 overflow-x-auto max-w-full pb-1 hide-scrollbar'>
-            {tags.map((tag) => (
+            {companyTags.map((tag) => (
               <span
                 key={tag.id}
                 className='flex items-center h-7 px-3 rounded-full bg-white text-xs border border-[#9d86f5] text-[#9d86f5] whitespace-nowrap transition hover:bg-violet-50'
@@ -198,7 +161,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
             <input
               id='reminders-toggle'
               type='checkbox'
-              checked={remindersEnabled}
+              checked={reminderSettings.enabled}
               onChange={(e) => handleToggle(e.target.checked)}
               className='sr-only peer'
               aria-label='Enable job reminder notifications'
@@ -217,15 +180,15 @@ function Settings({ searches, setSearches }: SettingsProps) {
           <select
             id='reminder-frequency'
             name='reminder-frequency'
-            disabled={!remindersEnabled}
-            value={reminderFrequency}
+            disabled={!reminderSettings.enabled}
+            value={reminderSettings.frequency.toString()}
             onChange={(e) => handleFrequencyChange(e.target.value)}
             className={`search-input w-full max-w-full ${
-              !remindersEnabled ? 'opacity-50 cursor-not-allowed' : ''
+              !reminderSettings.enabled ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             <option value=''>Select a Frequency</option>
-            <option value='5'>Every 5 Minutes</option>
+            <option value='1'>Every 1 Minutes</option>
             <option value='30'>Every 30 Minutes</option>
             <option value='60'>Every Hour</option>
           </select>

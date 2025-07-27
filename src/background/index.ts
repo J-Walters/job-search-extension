@@ -2,63 +2,51 @@ const ALARM_NAME = 'reminder_alarm';
 
 type ReminderSettings = {
   enabled?: boolean;
-  frequency?: string | number;
-};
-
-type LocalSettings = {
-  reminderSettings?: ReminderSettings;
+  frequency?: number;
 };
 
 async function syncAlarm(): Promise<void> {
   try {
-    const { settings = {} }: { settings?: LocalSettings } =
-      await chrome.storage.local.get('settings');
+    const { reminderSettings = {} }: { reminderSettings?: ReminderSettings } =
+      await chrome.storage.sync.get('reminderSettings');
 
-    const reminder = settings?.reminderSettings ?? {};
-    const enabled = reminder.enabled === true;
-    const freq = Number(reminder.frequency);
+    const enabled = reminderSettings.enabled === true;
+    const freq = Number(reminderSettings.frequency);
 
     await chrome.alarms.clear(ALARM_NAME);
 
     if (!enabled || isNaN(freq) || freq <= 0) {
       console.log(
-        `Alarm cleared or not set (enabled: ${enabled}, freq: ${reminder.frequency})`
+        `Alarm cleared or not set (enabled: ${enabled}, freq: ${reminderSettings.frequency})`
       );
       return;
     }
 
     await chrome.alarms.create(ALARM_NAME, { periodInMinutes: freq });
-    console.log(`Alarm set for every ${freq} minutes`);
   } catch (err) {
     console.error('syncAlarm error:', err);
   }
 }
 
-
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Installed — syncing alarm');
   syncAlarm();
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  console.log('Startup — syncing alarm');
   syncAlarm();
 });
 
-
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.settings) {
-    console.log('Settings changed — syncing alarm');
+  if (area === 'sync' && changes.reminderSettings) {
     syncAlarm();
   }
 });
-
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_NAME) {
     chrome.notifications.create({
       type: 'basic',
-      iconUrl: chrome.runtime.getURL('icons/alarm.png'), 
+      iconUrl: chrome.runtime.getURL('icons/alarm.png'),
       title: 'Time to check for jobs!',
       message: 'Don’t forget to run your Clocked In search.',
       silent: false,
