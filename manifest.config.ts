@@ -3,9 +3,11 @@ import { defineManifest } from '@crxjs/vite-plugin';
 export default defineManifest({
   manifest_version: 3,
   name: 'Clocked In',
+  description: "Save and organize your LinkedIn job searches. All in one place!",
   version: '1.0.0',
   action: {
     default_popup: 'index.html',
+    default_title: 'Clocked In',
   },
   icons: {
     16: 'icons/alarm.png',
@@ -18,7 +20,8 @@ export default defineManifest({
   },
   content_scripts: [{
     js: ['src/content/index.ts'],
-    matches: ['https://www.linkedin.com/jobs/*']
+    matches: ['https://www.linkedin.com/jobs/*'],
+    run_at: 'document_idle', 
   }],
   permissions: ['tabs', 'storage', 'alarms', 'notifications'],
   host_permissions: ['<all_urls>'],

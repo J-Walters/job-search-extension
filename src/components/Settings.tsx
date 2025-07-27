@@ -106,7 +106,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
           Company Filters
         </h2>
         <span className='search-subtext'>
-          Exclude these companies from you search
+          Remove these companies from your search
         </span>
         <div className='relative max-w-full'>
           <div className='flex flex-nowrap gap-1 overflow-x-auto max-w-full pb-1 hide-scrollbar'>
@@ -143,7 +143,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
             <button
               type='submit'
               onClick={handleAddTags}
-              className='edit-save-button shrink-0'
+              className='edit-save-button shrink-0 h-7.5 rounded-xl'
               style={{ minWidth: 52 }}
             >
               Block
@@ -188,7 +188,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
             }`}
           >
             <option value=''>Select a Frequency</option>
-            <option value='1'>Every 1 Minutes</option>
+            <option value='5'>Every 5 Minutes</option>
             <option value='30'>Every 30 Minutes</option>
             <option value='60'>Every Hour</option>
           </select>

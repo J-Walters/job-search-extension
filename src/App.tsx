@@ -1,6 +1,6 @@
 import { Search, Bookmark, Settings as SettingsIcon } from 'lucide-react';
 import { nanoid } from 'nanoid';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import LinkedInSearchForm from './components/LinkedInSearchForm';
 import SavedSearchList from './components/SavedSearchList';
@@ -22,10 +22,6 @@ function App() {
   const [activeTab, setActiveTab] = useState('search');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
 
-  useEffect(() => {
-    console.log('Current searches state:', searches);
-  }, [searches]);
-
   const onSubmit = (data: LinkedInSearchFields) => {
     const url = buildLinkedInSearchUrl(data);
 
@@ -41,8 +37,6 @@ function App() {
 
     chrome.tabs.create({ url });
   };
-
-  chrome.storage.sync.get('searches', console.log);
 
   const tabs = [
     {

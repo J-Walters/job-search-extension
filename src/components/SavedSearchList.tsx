@@ -3,7 +3,12 @@ import { nanoid } from 'nanoid';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { SavedSearch, ManualSearch, SortOption } from '../types';
+import type {
+  SavedSearch,
+  ManualSearch,
+  SortOption,
+  FormInputs,
+} from '../types';
 import SavedSearchCard from './SavedSearchCard';
 import SortDropdown from './SortDropdown';
 
@@ -22,8 +27,6 @@ type SavedSearchListProps = {
   sortOption: SortOption;
   setSortOption: React.Dispatch<React.SetStateAction<SortOption>>;
 };
-
-type FormInputs = Omit<ManualSearch, 'id'>;
 
 function SavedSearchList({
   searches,
@@ -122,7 +125,6 @@ function SavedSearchList({
               {copied ? 'Copied!' : 'Copy URL'}
             </button>
           </div>
-
           <div className='flex justify-end gap-2'>
             <button
               type='button'
@@ -147,7 +149,7 @@ function SavedSearchList({
         <div className='flex items-center gap-2 mb-3'>
           <div className='flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] w-full max-w-[175px]'>
             <input
-              type='text'
+              type='search'
               placeholder='Search saved titles...'
               className='flex-1 text-xs placeholder:text-gray-400 focus:outline-none'
               value={searchQuery}
