@@ -2,6 +2,7 @@ type TimeFrameKey = 'r1800' | 'r3600' | 'r7200' | 'r86400';
 type SortByKey = 'DD' | 'R'
 type LinkedInSearchFields = Omit<LinkedInSearch, 'id' | 'url' | 'created_at'>;
 type SavedSearch = LinkedInSearch | ManualSearch
+type SortOption = 'newest' | 'oldest' | 'az' | 'za';
 
 interface LinkedInSearch {
   id: string;
@@ -34,6 +35,8 @@ interface Tags {
   company: string;
 }
 
+
+
 export type {
   SavedSearch,
   LinkedInSearch,
@@ -43,5 +46,6 @@ export type {
   SortByKey,
   EditFields,
   FormInputs,
-  Tags
+  Tags,
+  SortOption
 };

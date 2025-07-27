@@ -3,19 +3,37 @@ import { nanoid } from 'nanoid';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { SavedSearch, ManualSearch } from '../types';
+import type { SavedSearch, ManualSearch, SortOption } from '../types';
 import SavedSearchCard from './SavedSearchCard';
+import SortDropdown from './SortDropdown';
+
+const sortFunctions = {
+  newest: (a: SavedSearch, b: SavedSearch) =>
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  oldest: (a: SavedSearch, b: SavedSearch) =>
+    new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+  az: (a: SavedSearch, b: SavedSearch) => a.keywords.localeCompare(b.keywords),
+  za: (a: SavedSearch, b: SavedSearch) => b.keywords.localeCompare(a.keywords),
+};
 
 type SavedSearchListProps = {
   searches: SavedSearch[];
   setSearches: React.Dispatch<React.SetStateAction<SavedSearch[]>>;
+  sortOption: SortOption;
+  setSortOption: React.Dispatch<React.SetStateAction<SortOption>>;
 };
 
 type FormInputs = Omit<ManualSearch, 'id'>;
 
-function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
+function SavedSearchList({
+  searches,
+  setSearches,
+  sortOption,
+  setSortOption,
+}: SavedSearchListProps) {
   const [addNew, setAddNew] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const {
     register,
@@ -32,15 +50,11 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
   };
 
   const handleEdit = (edited: SavedSearch) => {
-    const updatedSearches = searches
-      .map((s) => (s.id === edited.id ? edited : s))
-      .sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-
-    setSearches(updatedSearches);
-    chrome.storage.local.set({ searches: updatedSearches });
+    const updated = searches
+      .map((search) => (search.id === edited.id ? edited : search))
+      .sort(sortFunctions[sortOption]);
+    setSearches(updated);
+    chrome.storage.local.set({ searches: updated });
   };
 
   const handleCopyLink = async () => {
@@ -55,8 +69,8 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
 
   const onSubmit = (data: FormInputs) => {
     chrome.storage.local.get(['searches'], (result) => {
-      const existingSearches = Array.isArray(result.searches)
-        ? (result.searches as SavedSearch[])
+      const existing: SavedSearch[] = Array.isArray(result.searches)
+        ? result.searches
         : [];
 
       const newSearch: ManualSearch = {
@@ -65,24 +79,25 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
         created_at: new Date().toISOString(),
       };
 
-      const updatedSearches = [newSearch, ...existingSearches];
-
-      chrome.storage.local.set({ searches: updatedSearches });
-
-      setSearches(updatedSearches);
+      const updated = [newSearch, ...existing];
+      chrome.storage.local.set({ searches: updated });
+      setSearches(updated);
     });
 
     setAddNew(false);
     reset();
   };
 
+  const filtered = searches
+    .filter((search) =>
+      search.keywords.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort(sortFunctions[sortOption]);
+
   return (
     <>
       {addNew ? (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor='keywords' className='sr-only'>
-            Keywords:
-          </label>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 mb-4'>
           <input
             autoFocus
             id='keywords'
@@ -95,85 +110,90 @@ function SavedSearchList({ searches, setSearches }: SavedSearchListProps) {
             })}
           />
           {errors.keywords && (
-            <p className='text-xs text-red-400 mt-1'>
-              Keywords cannot be empty.
-            </p>
+            <p className='text-xs text-red-400'>Keywords cannot be empty.</p>
           )}
-          <div>
-            <label htmlFor='url' className='sr-only'>
-              URL
-            </label>
+
+          <div className='relative'>
             <input
               id='url'
               type='url'
               placeholder='https://example.com'
-              className='search-input'
+              className='search-input pr-20'
               {...register('url', {
                 required: 'Please enter a valid URL',
                 validate: (v) => v.trim() !== '',
               })}
             />
-            {errors.url && (
-              <p className='text-xs text-red-400 mt-1'>
-                Please enter a valid URL.
-              </p>
-            )}
             <button
-              id='copy-button'
               type='button'
               onClick={handleCopyLink}
-              className='edit-save-button'
+              className='absolute top-1/2 right-2 -translate-y-1/2 text-xs text-violet-600 hover:underline'
             >
               {copied ? 'Copied!' : 'Copy URL'}
             </button>
           </div>
-          <button
-            type='button'
-            onClick={() => {
-              setAddNew(false);
-              reset();
-            }}
-            className='edit-cancel-button'
-          >
-            Cancel
-          </button>
-          <button
-            type='submit'
-            className='edit-save-button'
-            disabled={isSubmitting}
-          >
-            Save
-          </button>
+
+          <div className='flex justify-end gap-2'>
+            <button
+              type='button'
+              onClick={() => {
+                setAddNew(false);
+                reset();
+              }}
+              className='edit-cancel-button'
+            >
+              Cancel
+            </button>
+            <button
+              type='submit'
+              className='edit-save-button'
+              disabled={isSubmitting}
+            >
+              Save
+            </button>
+          </div>
         </form>
       ) : (
-        <div className='flex justify-center mb-3'>
+        <div className='flex items-center gap-2 mb-3'>
+          <div className='flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] w-full max-w-[175px]'>
+            <input
+              type='text'
+              placeholder='Search saved titles...'
+              className='flex-1 text-xs placeholder:text-gray-400 focus:outline-none'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <SortDropdown sortOption={sortOption} onChange={setSortOption} />
           <button
             type='button'
+            title='Add New Search'
             onClick={() => setAddNew(true)}
-            className='add-new-btn'
+            className='h-9 w-9 flex items-center justify-center text-[#9d86f5] border border-gray-300 bg-white rounded-xl hover:ring-1 hover:ring-[#9d86f5] transition'
           >
-            <PlusCircle size={14} className='inline-block' />
-            Add New Search
+            <PlusCircle size={16} />
           </button>
         </div>
       )}
-      {searches.length > 0 ? (
-        <>
-          <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar'>
-            <ul className='space-y-4'>
-              {searches.map((search) => (
-                <SavedSearchCard
-                  key={search.id}
-                  search={search}
-                  onDelete={handleDelete}
-                  onEdit={handleEdit}
-                />
-              ))}
-            </ul>
-          </div>
-        </>
+      {filtered.length > 0 ? (
+        <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar'>
+          <ul className='space-y-4'>
+            {filtered.map((search) => (
+              <SavedSearchCard
+                key={search.id}
+                search={search}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+              />
+            ))}
+          </ul>
+        </div>
       ) : (
-        <p className='text-sm text-gray-500'>No saved searches</p>
+        <p className='text-sm text-center text-gray-400 italic mt-4'>
+          {searches.length > 0
+            ? 'No searches found!'
+            : 'No saved searches. But hey, clean slate!'}
+        </p>
       )}
     </>
   );

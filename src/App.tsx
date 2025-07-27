@@ -9,12 +9,14 @@ import type {
   SavedSearch,
   LinkedInSearch,
   LinkedInSearchFields,
+  SortOption,
 } from './types/index';
 import { buildLinkedInSearchUrl } from './utils/index';
 
 function App() {
   const [searches, setSearches] = useState<SavedSearch[]>([]);
   const [activeTab, setActiveTab] = useState('search');
+  const [sortOption, setSortOption] = useState<SortOption>('newest');
 
   useEffect(() => {
     chrome.storage.local.get(['searches'], (result) => {
@@ -67,7 +69,12 @@ function App() {
       label: 'Saved',
       icon: <Bookmark size={14} className='align-middle relative top-[1px]' />,
       content: (
-        <SavedSearchList searches={searches} setSearches={setSearches} />
+        <SavedSearchList
+          searches={searches}
+          setSearches={setSearches}
+          sortOption={sortOption}
+          setSortOption={setSortOption}
+        />
       ),
     },
     {
