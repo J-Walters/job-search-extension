@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import LinkedInSearchForm from './components/LinkedInSearchForm';
 import SavedSearchList from './components/SavedSearchList';
 import Settings from './components/Settings';
+import { useChromeStorage } from './hooks/useChromeStorage';
 import type {
   SavedSearch,
   LinkedInSearch,
@@ -14,48 +15,34 @@ import type {
 import { buildLinkedInSearchUrl } from './utils/index';
 
 function App() {
-  const [searches, setSearches] = useState<SavedSearch[]>([]);
+  const [searches, setSearches] = useChromeStorage<SavedSearch[]>(
+    'searches',
+    []
+  );
   const [activeTab, setActiveTab] = useState('search');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
 
   useEffect(() => {
-    chrome.storage.local.get(['searches'], (result) => {
-      const existingSearches = Array.isArray(result.searches)
-        ? (result.searches as SavedSearch[])
-        : [];
-
-      const sorted = [...existingSearches].sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-      setSearches(sorted);
-    });
-  }, []);
+    console.log('Current searches state:', searches);
+  }, [searches]);
 
   const onSubmit = (data: LinkedInSearchFields) => {
     const url = buildLinkedInSearchUrl(data);
 
-    chrome.storage.local.get(['searches'], (result) => {
-      const existingSearches = Array.isArray(result.searches)
-        ? (result.searches as SavedSearch[])
-        : [];
+    const newSearch: LinkedInSearch = {
+      id: nanoid(),
+      ...data,
+      url,
+      created_at: new Date().toISOString(),
+    };
 
-      const newSearch: LinkedInSearch = {
-        id: nanoid(),
-        ...data,
-        url,
-        created_at: new Date().toISOString(),
-      };
+    const updatedSearches = [newSearch, ...searches];
+    setSearches(updatedSearches);
 
-      const updatedSearches = [newSearch, ...existingSearches];
-
-      chrome.storage.local.set({ searches: updatedSearches });
-
-      setSearches(updatedSearches);
-
-      chrome.tabs.create({ url });
-    });
+    chrome.tabs.create({ url });
   };
+
+  chrome.storage.sync.get('searches', console.log);
 
   const tabs = [
     {

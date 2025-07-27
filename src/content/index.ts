@@ -1,8 +1,10 @@
+import type { Tags } from '../types/index'
+
 const removeJobs = () => {
-  chrome.storage.local.get(['companyTags'], (result) => {
+  chrome.storage.sync.get(['companyTags'], (result) => {
     const blockedCompanies = result.companyTags ? result.companyTags : [];
     const blockedCompanyNames = blockedCompanies
-      .map(tag => tag.company?.trim().toLowerCase())
+      .map((tag: Tags) => tag.company?.trim().toLowerCase())
       .filter(Boolean);
     console.log('Blocked companies:', blockedCompanyNames);
 
@@ -30,7 +32,7 @@ const observeJobs = () => {
                document.querySelector('ul')
   if (!list) {
     console.log('Job results list not found, retrying in 500ms...');
-    setTimeout(observeJobs, 500); // Try again in half a second
+    setTimeout(observeJobs, 500);
     return;
   }
   console.log('Observing job results list for changes.');
@@ -46,7 +48,7 @@ console.log('LinkedIn filter extension script running!');
 observeJobs();
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.companyTags) {
+  if (area === 'sync' && changes.companyTags) {
     console.log('Detected changes to companyTags. Re-running removeJobs.');
     removeJobs();
   }

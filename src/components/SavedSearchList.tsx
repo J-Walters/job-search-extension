@@ -46,7 +46,6 @@ function SavedSearchList({
   const handleDelete = (id: string) => {
     const updatedSearches = searches.filter((search) => search.id !== id);
     setSearches(updatedSearches);
-    chrome.storage.local.set({ searches: updatedSearches });
   };
 
   const handleEdit = (edited: SavedSearch) => {
@@ -54,7 +53,6 @@ function SavedSearchList({
       .map((search) => (search.id === edited.id ? edited : search))
       .sort(sortFunctions[sortOption]);
     setSearches(updated);
-    chrome.storage.local.set({ searches: updated });
   };
 
   const handleCopyLink = async () => {
@@ -68,22 +66,14 @@ function SavedSearchList({
   };
 
   const onSubmit = (data: FormInputs) => {
-    chrome.storage.local.get(['searches'], (result) => {
-      const existing: SavedSearch[] = Array.isArray(result.searches)
-        ? result.searches
-        : [];
+    const newSearch: ManualSearch = {
+      id: nanoid(),
+      ...data,
+      created_at: new Date().toISOString(),
+    };
 
-      const newSearch: ManualSearch = {
-        id: nanoid(),
-        ...data,
-        created_at: new Date().toISOString(),
-      };
-
-      const updated = [newSearch, ...existing];
-      chrome.storage.local.set({ searches: updated });
-      setSearches(updated);
-    });
-
+    const updated = [newSearch, ...searches];
+    setSearches(updated);
     setAddNew(false);
     reset();
   };
