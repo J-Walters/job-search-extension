@@ -90,28 +90,39 @@ function SavedSearchList({
   return (
     <>
       {addNew ? (
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 mb-4'>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className='space-y-2 p-3 mb-4 border-2 border-dashed border-[#9d86f5] rounded-xl max-w-xs bg-white'
+        >
+          <label htmlFor='keywords' className='sr-only'>
+            Keywords
+          </label>
           <input
             autoFocus
             id='keywords'
             type='text'
             placeholder='e.g. Software Engineer - Builtin'
-            className='search-input'
+            className='w-full px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#9d86f5] focus:border-[#9d86f5] hover:bg-violet-50 transition'
             {...register('keywords', {
               required: 'Please add a title.',
               validate: (v) => v.trim() !== '',
             })}
           />
           {errors.keywords && (
-            <p className='text-xs text-red-400'>Keywords cannot be empty.</p>
+            <p className='text-xs text-red-400 -mt-1'>
+              Keywords cannot be empty.
+            </p>
           )}
 
           <div className='relative'>
+            <label htmlFor='url' className='sr-only'>
+              URL
+            </label>
             <input
               id='url'
               type='url'
               placeholder='https://example.com'
-              className='search-input pr-20'
+              className='w-full mt-1 px-3 py-1.5 pr-20 rounded-xl border border-gray-200 bg-white text-xs text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#9d86f5] focus:border-[#9d86f5] hover:bg-violet-50 transition'
               {...register('url', {
                 required: 'Please enter a valid URL',
                 validate: (v) => v.trim() !== '',
@@ -120,12 +131,13 @@ function SavedSearchList({
             <button
               type='button'
               onClick={handleCopyLink}
-              className='absolute top-1/2 right-2 -translate-y-1/2 text-xs text-violet-600 hover:underline'
+              className='absolute top-1/2 right-2 -translate-y-1/2 text-[10px] px-2 py-0.5 rounded-md bg-violet-100 text-violet-700 hover:bg-violet-200 transition'
             >
               {copied ? 'Copied!' : 'Copy URL'}
             </button>
           </div>
-          <div className='flex justify-end gap-2'>
+
+          <div className='flex justify-end gap-2 pt-1'>
             <button
               type='button'
               onClick={() => {
