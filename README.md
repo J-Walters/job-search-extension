@@ -36,6 +36,8 @@ After being laid off, I hit the job market and noticed roles on LinkedIn had hun
 ### 📸 Usage
 
 
+[Watch the Clocked In demo on Loom!](https://www.loom.com/share/13cf794f3a9d4a8b81e05536b3721f28?sid=969a9ee5-c04a-4987-acec-c908e5d07d16)
+
 ---
 
 ### 🛠  Built with
