@@ -158,7 +158,7 @@ function SavedSearchList({
           </div>
         </form>
       ) : (
-        <div className='flex items-center gap-2 mb-3'>
+        <div className='flex items-center gap-2 mb-2'>
           <div className='flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] w-full max-w-[175px]'>
             <input
               type='search'
@@ -180,8 +180,8 @@ function SavedSearchList({
         </div>
       )}
       {filtered.length > 0 ? (
-        <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar'>
-          <ul className='space-y-4'>
+        <div className='max-h-[350px] overflow-y-auto pr-1 hidden-scrollbar'>
+          <ul className='space-y-3'>
             {filtered.map((search) => (
               <SavedSearchCard
                 key={search.id}

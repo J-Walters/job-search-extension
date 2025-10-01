@@ -100,8 +100,9 @@ function Settings({ searches, setSearches }: SettingsProps) {
   };
 
   return (
-    <div className='max-h-[400px] overflow-y-auto pr-1 hidden-scrollbar overflow-visible'>
-      <div>
+    <div className='flex flex-col h-full min-h-0'>
+      <div className='flex-1 min-h-0 overflow-y-auto pr-1 hidden-scrollbar'>
+        <div>
         <h2 className='text-xs font-semibold text-gray-500 tracking-wide uppercase mb-1'>
           Company Filters
         </h2>
@@ -217,6 +218,7 @@ function Settings({ searches, setSearches }: SettingsProps) {
           <CircleX size={14} />
           Delete Searches
         </button>
+        </div>
       </div>
     </div>
   );
