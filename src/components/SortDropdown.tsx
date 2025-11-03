@@ -62,12 +62,12 @@ export default function SortDropdown({
       <button
         title='Filter Searches'
         onClick={() => setOpen((prev) => !prev)}
-        className='h-9 w-9 flex items-center justify-center text-[#9d86f5] border border-gray-300 bg-white rounded-xl hover:ring-1 hover:ring-[#9d86f5] transition'
+        className='icon-button'
       >
         {getSortIcon(sortOption)}
       </button>
       {open && (
-        <ul className='absolute right-0 z-10 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow text-xs'>
+        <ul className='menu'>
           {options.map(({ value, label, icon }) => (
             <li
               key={value}
@@ -75,8 +75,8 @@ export default function SortDropdown({
                 onChange(value);
                 setOpen(false);
               }}
-              className={`flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                sortOption === value ? 'font-medium text-[#9d86f5]' : ''
+              className={`menu-item ${
+                sortOption === value ? 'menu-item-active' : ''
               }`}
             >
               {icon}

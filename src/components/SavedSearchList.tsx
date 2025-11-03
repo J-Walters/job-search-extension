@@ -102,7 +102,7 @@ function SavedSearchList({
             id='keywords'
             type='text'
             placeholder='e.g. Software Engineer - Builtin'
-            className='w-full px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#9d86f5] focus:border-[#9d86f5] hover:bg-violet-50 transition'
+            className='search-input w-full'
             {...register('keywords', {
               required: 'Please add a title.',
               validate: (v) => v.trim() !== '',
@@ -122,7 +122,7 @@ function SavedSearchList({
               id='url'
               type='url'
               placeholder='https://example.com'
-              className='w-full mt-1 px-3 py-1.5 pr-20 rounded-xl border border-gray-200 bg-white text-xs text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#9d86f5] focus:border-[#9d86f5] hover:bg-violet-50 transition'
+              className='search-input w-full pr-20'
               {...register('url', {
                 required: 'Please enter a valid URL',
                 validate: (v) => v.trim() !== '',
@@ -159,11 +159,11 @@ function SavedSearchList({
         </form>
       ) : (
         <div className='flex items-center gap-2 mb-2'>
-          <div className='flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] w-full max-w-[175px] hover:bg-violet-50'>
+          <div className='input-group w-full max-w-[175px]'>
             <input
               type='search'
               placeholder='Search saved titles...'
-              className='flex-1 text-xs placeholder:text-gray-400 focus:outline-none'
+              className='input-inline'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -173,7 +173,7 @@ function SavedSearchList({
             type='button'
             title='Add New Search'
             onClick={() => setAddNew(true)}
-            className='h-9 w-9 flex items-center justify-center text-[#9d86f5] border border-gray-300 bg-white rounded-xl hover:ring-1 hover:ring-[#9d86f5] transition'
+            className='icon-button'
           >
             <PlusCircle size={16} />
           </button>

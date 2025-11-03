@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   :root {
@@ -8,7 +9,8 @@
 
   html,
   body {
-    @apply min-w-[320px] max-w-[400px] max-h-[620px] p-2 m-0 overflow-visible font-[var(--font-main)];
+    @apply min-w-[320px] max-w-[400px] max-h-[600px] p-2 m-0 overflow-visible font-[var(--font-main)] bg-gradient-to-b from-violet-50 to-violet-100
+;
   }
 }
 
@@ -17,7 +19,7 @@
   /** -----HEADER -----*/
 
   .header-container {
-    @apply max-h-[640px] w-full flex flex-col mx-auto p-4 rounded-2xl bg-gray-50 shadow-[0_0_20px_rgba(139,92,246,0.5)]
+    @apply max-h-[580px] w-full flex flex-col mx-auto p-4 rounded-2xl bg-white shadow-[0_0_20px_rgba(139,92,246,0.5)] dark:bg-gray-400 border border-violet-300 min-h-0
   }
 
   .header {
@@ -54,15 +56,16 @@
   }
 
   .search-input {
-    @apply w-full px-4 py-2 rounded-full border border-gray-200 text-xs text-gray-700 placeholder-gray-400 transition focus:outline-none focus:ring-2 focus:ring-[#9d86f5] focus:border-[#9d86f5] hover:bg-violet-50;
-  }
+@apply w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-gray-700 placeholder-gray-400
+    focus:outline-none focus:ring-1 focus:ring-[#9d86f5] focus:border-[#9d86f5]
+    hover:bg-violet-50 transition;  }
 
   .search-subtext {
     @apply text-xs text-gray-400 mt-1 block whitespace-nowrap
   }
 
   .search-button {
-    @apply w-full cursor-pointer py-2 font-semibold rounded-full text-white bg-[#9d86f5] tracking-wide hover:bg-[#8c73e6] transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed
+    @apply w-full cursor-pointer py-2 font-normal rounded-full text-white bg-[#9d86f5] tracking-wide hover:bg-[#8c73e6] transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed
   }
 
   .search-error {
@@ -71,45 +74,55 @@
 
   /** ----- EDIT FORM ----- */
   .edit-label {
-    @apply text-xs block font-medium text-gray-700 mb-1
+    @apply sr-only
   }
 
-  .edit-input {
-    @apply h-7 leading-snug text-xs border-b border-gray-300 bg-transparent px-0 py-0.5 focus:outline-none focus:border-violet-500}  
+.edit-input {
+  @apply h-7 leading-snug text-xs border-b border-gray-200 bg-transparent px-0 py-0.5 
+         focus:outline-none focus:border-[#9d86f5]
+         transition-colors duration-150;
+}
 
+.edit-button-container {
+  @apply flex justify-end w-full items-center gap-1.5 mt-1 text-sm text-gray-600 
+}
 
-  .edit-error {
-    @apply text-xs text-red-400 block mt-1
-  }
+.edit-save-button {
+  @apply text-xs font-semibold px-3 py-1 rounded-lg 
+         text-white bg-[#9d86f5]
+         hover:bg-[#8c73e6]
+         transition-all duration-150;
+}
 
-  .edit-button-container {
-    @apply flex justify-end w-full items-center gap-1.5 mt-1 text-sm text-gray-500
-  }
-
-  .edit-save-button {
-    @apply text-xs font-semibold px-3 py-1 rounded-lg hover:bg-violet-200 text-violet-600 bg-violet-100
-  }
-
-  .edit-cancel-button {
-    @apply text-xs px-3 py-1 rounded-lg text-gray-500 hover:bg-gray-100
-  }
+.edit-cancel-button {
+  @apply text-xs px-3 py-1 rounded-lg 
+         text-gray-500 
+         hover:bg-gray-200 
+         transition-all duration-150;
+}
 
 
   /* ------- CARD ------ */
   .card {
-    @apply bg-white rounded-xl shadow-sm px-4 py-3 text-sm text-gray-800 flex justify-between items-start
+    @apply bg-white border border-gray-200  rounded-xl px-3 py-3 text-sm text-gray-800 flex justify-between items-start 
   }
 
-    .card-content {
+  .card-editing {
+  /* @apply scale-[1.01] transition-transform; */
+    @apply border-2 border-[#9d86f5] border-dashed;
+    /* @apply shadow-md shadow-[#9d86f52e]; */
+  }
+
+  .card-content {
     @apply flex-1;
   }
 
   .card-title {
-    @apply font-semibold text-sm leading-snug text-violet-700;
+    @apply font-medium text-sm leading-snug text-gray-500 mb-1;
   }
 
   .card-meta {
-    @apply text-gray-500 text-xs text-nowrap mt-1;
+    @apply text-gray-500 text-xs text-nowrap mb-1;
   }
 
   .card-action {
@@ -132,37 +145,145 @@
     @apply text-gray-400 hover:text-violet-700;
   }
 
+  .card-chip-primary {
+    @apply bg-white text-gray-600 border border-gray-600 text-xs px-3 py-1 rounded-lg
+  }
+
+  .card-chip-domain {
+    @apply  bg-white border-[#9d86f5] border text-[#9d86f5] text-xs px-3 py-1 rounded-lg
+  }
+
+  .card-chip-linkedin {
+    @apply bg-white text-blue-700 border border-blue-300 text-xs px-3 py-1 rounded-lg
+  }
+
+  .add-new-btn {
+    @apply flex items-center justify-center gap-2 w-full px-4 h-9 rounded-full 
+             bg-white border border-gray-200 text-gray-600 font-medium
+             hover:border-[#9d86f5] hover:text-[#9d86f5]
+             transition-colors duration-150
+  }
+
+  /** ------SETTINGS-----*/
+
+    .delete-btn {
+    @apply flex items-center justify-center gap-2 w-full px-4 h-9 rounded-full 
+             bg-white border border-gray-200 text-gray-600 font-medium
+             hover:border-rose-600 hover:text-rose-600 hover:bg-rose-50
+
+             transition-colors duration-150
+
+
+  }
+
+    /* -------- DARK MODE -------- */
+  .dark .search-input {
+    @apply bg-gray-800 text-gray-100 border-gray-700 placeholder-gray-400
+           hover:bg-gray-700 focus:border-[#c2b4f7] focus:ring-[#c2b4f7];
+  }
+
+  .dark .search-button {
+    @apply bg-[#8c73e6] hover:bg-[#7c64d5] text-white;
+  }
+
+  .dark .search-subtext,
+  .dark .search-label,
+  .dark .search-error,
+  .dark .edit-button-container,
+  .dark .card-title,
+  .dark .card-meta {
+    @apply text-gray-300;
+  }
+
+  .dark .edit-input {
+    @apply text-gray-100 border-gray-600 focus:border-[#c2b4f7];
+  }
+
+  .dark .edit-cancel-button {
+    @apply text-gray-400 hover:bg-gray-700;
+  }
+
+  .dark .edit-save-button {
+    @apply bg-[#8c73e6] hover:bg-[#7c64d5] text-white;
+  }
+
+  .dark .card {
+    @apply bg-gray-800 text-gray-100 border border-gray-700;
+  }
+
+  .dark .card-chip-primary {
+    @apply bg-gray-900 text-gray-300 border border-gray-500;
+  }
+
+  .dark .card-chip-domain {
+    @apply bg-gray-900 text-[#c2b4f7] border-[#c2b4f7];
+  }
+
+  .dark .card-chip-linkedin {
+    @apply bg-gray-900 text-blue-400 border border-blue-400;
+  }
+
+  .dark .add-new-btn {
+    @apply bg-gray-800 text-gray-300 border-gray-600
+           hover:border-[#c2b4f7] hover:text-[#c2b4f7];
+  }
+
+  .dark .delete-btn {
+    @apply bg-gray-800 text-gray-300 border-gray-600
+           hover:border-rose-500 hover:text-rose-500 hover:bg-rose-900/20;
+  }
+
+  .dark .nav-bar {
+    @apply border-gray-700 text-gray-400;
+  }
+
+  .dark .nav-tab {
+    @apply border-b-gray-700 hover:text-white;
+  }
+
+  .dark .icon-delete {
+    @apply text-gray-400 hover:text-red-400;
+  }
+
+  .dark .icon-edit {
+    @apply text-gray-400 hover:text-violet-400;
+  }
+
+
+
 }
 
 @layer utilities {
-    .button-primary {
-    @apply w-full py-2 rounded-2xl font-semibold text-white transition
-           bg-gradient-to-b from-violet-400 to-violet-500
-           shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)]
-           hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
-           active:shadow-inner;
-  }
-
-  .button-muted {
-    @apply py-1.5 text-sm rounded-xl font-semibold text-white transition 
-           bg-gradient-to-b from-gray-300 to-gray-400 
-           shadow-[4px_4px_8px_rgba(0,0,0,0.08),-4px_-4px_8px_rgba(255,255,255,0.6)]
-           hover:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.4)]
-           active:shadow-inner;
-  }
-
   .form-error {
     @apply text-xs text-red-400 mt-1 block;
   }
 
-  .icon-action {
-    @apply text-gray-400 transition-colors duration-150;
+  /* Icon button used for toolbar actions */
+  .icon-button {
+    @apply h-9 w-9 flex items-center justify-center text-[#9d86f5] border border-gray-300 bg-white rounded-xl hover:ring-1 hover:ring-[#9d86f5] transition;
   }
-  .icon-delete-hover {
-    @apply hover:text-red-500;
+
+  /* Input group with focus ring and hover background */
+  .input-group {
+    @apply flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] hover:bg-violet-50;
   }
-  .icon-edit-hover {
-    @apply hover:text-violet-700;
+  .input-inline {
+    @apply flex-1 text-xs placeholder:text-gray-400 focus:outline-none;
+  }
+
+  /* Simple menu and items for popovers */
+  .menu {
+    @apply absolute right-0 z-10 mt-2 w-36 bg-white border border-gray-200 rounded-md shadow text-xs;
+  }
+  .menu-item {
+    @apply flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer;
+  }
+  .menu-item-active {
+    @apply font-medium text-[#9d86f5];
+  }
+
+  .hidden-scrollbar {
+    @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
   }
 
 }
