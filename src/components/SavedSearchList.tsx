@@ -159,7 +159,7 @@ function SavedSearchList({
         </form>
       ) : (
         <div className='flex items-center gap-2 mb-2'>
-          <div className='flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] w-full max-w-[175px]'>
+          <div className='flex items-center border border-gray-300 bg-white rounded-xl px-3 py-2 focus-within:ring-1 focus-within:ring-[#9d86f5] w-full max-w-[175px] hover:bg-violet-50'>
             <input
               type='search'
               placeholder='Search saved titles...'
