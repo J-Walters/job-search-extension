@@ -21,8 +21,7 @@ export default defineManifest({
   content_scripts: [{
     js: ['src/content/index.ts'],
     matches: ['https://www.linkedin.com/jobs/*'],
-    run_at: 'document_idle', 
   }],
-  permissions: ['tabs', 'storage', 'alarms', 'notifications'],
+  permissions: ['tabs', 'storage', 'alarms', 'notifications', 'webNavigation', 'scripting'],
   host_permissions: ['<all_urls>'],
 });

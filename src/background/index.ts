@@ -5,6 +5,22 @@ type ReminderSettings = {
   frequency?: number;
 };
 
+chrome.webNavigation.onHistoryStateUpdated.addListener(
+  (details) => {
+    const url = new URL(details.url);
+    if (
+      url.hostname === 'www.linkedin.com' &&
+      url.pathname.startsWith('/jobs/')
+    ) {
+      chrome.scripting.executeScript({
+        target: { tabId: details.tabId },
+        files: ['src/content/index.ts'],
+      });
+    }
+  },
+  { url: [{ hostEquals: 'www.linkedin.com' }] }
+);
+
 async function syncAlarm(): Promise<void> {
   try {
     const { reminderSettings = {} }: { reminderSettings?: ReminderSettings } =
